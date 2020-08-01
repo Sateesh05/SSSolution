@@ -1,0 +1,131 @@
+<div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <span style='font-size: 23px;color: blueviolet;margin-left: 30px;' id='leavedept_title'></span>
+        <button id="leavebtn_title" class="btn btn-success glyphicon glyphicon-plus
+           glyph bt-sm float-right" (click)="OpenPopup(0)">
+        </button>
+      </div>
+    </div>
+    <div class="table table-responsive">
+      <table class="table table-bordered
+                      table-hover
+                      table-stripped
+                      table-condensed">
+        <thead class="bg-info">
+          <tr>
+            <th>S.NO</th>
+            <th>Name</th>
+            <th>SUBJECT</th>
+            <th>REASON</th>
+            <th>REPORTING PERSON</th>
+            <th>DATE OF LEAVE</th>
+            <th>STATUS</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let x of leaveResult; let i=index">
+            <td>{{i+1}}</td>
+            <td>{{x.name}}</td>
+            <td>{{x.subject}}</td>
+            <td>{{x.reason}}</td>
+            <td>{{x.reportingPersonName}}</td>
+            <td>{{x.dateOfleave| date :'mediumDate'}}</td>
+            <td>{{x.action}}</td>
+
+            <td *ngIf='false'><button class="glyphicon glyphicon-pencil" (click)="OpenPopup(x)">Edite </button>
+            </td>
+            <td><button class="glyphicon glyphicon-trash" (click)="delete(x.id)">delete </button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="Newdepartment">
+  <div class="modal-dialog modal-md" data-keyboard="false" data-backdrop="satic">
+    <div class="modal-content modal-xl">
+      <div class="modal-header">
+        <h2 id="m_title" class="modal-title"></h2>
+        <button (click)='close()' class="close ,pull-right" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-xl">
+        <!--popup form-->
+        <form #dptData="ngForm" class="form-horizontal">
+          <!--Leave Subject input box   -->
+          <div class=" form-group">
+            <label class="control-label col-sm-2"> Subject:</label>
+            <div class="col-sm-10">
+              <input type="text" id="m_description" class="form-control" [(ngModel)]="leave.subject" name="subject"
+                placeholder="" required error #subject='ngModel'>
+            </div>
+            <div *ngIf="subject.invalid&&subject.touched " [ngClass]="'error'" class='alert alert-danger'>
+              Subject is required.
+            </div>
+          </div>
+          <!--Leave Reason input box-->
+          <div class="form-group">
+            <label class="control-label col-sm-2">Reason:</label>
+            <div class="col-sm-10">
+              <textarea rows="5" id="m_description" class="form-control" [(ngModel)]="leave.reason" name="reason"
+                placeholder=" text here" required error #reason='ngModel'></textarea>
+            </div>
+            <div *ngIf="reason.invalid&&reason.touched " [ngClass]="'error'" class='alert alert-danger'>
+              Reason is required.
+            </div>
+          </div>
+          <!--Date Of Leave-->
+          <div class="form-group ">
+            <label class="control-label col-sm-4">Date of Leave:</label>
+            <div class="col-sm-6">
+              <input type="date" id="m_DateOfleave" class="form-control" [(ngModel)]="leave.dateOfleave"
+                name="dateOfleave" #dateOfleave="ngModel" required />
+            </div>
+            <div *ngIf="dateOfleave.invalid && dateOfleave.touched " [ngClass]="'error'" class='alert alert-danger'>
+              Employee Date of leave is required.
+            </div>
+          </div>
+          <!--Leave Reporting Person Input Box-->
+          <div class="form-group ">
+            <label class="control-label col-sm-2">ReportingPerson:</label>
+            <div class="col-sm-6">
+              <select id="m_ReportingPerson_id" name="reportingPerson_id" required #reportingPerson_id='ngModel'
+                class="form-control" [(ngModel)]="leave.reportingPerson_id" placeholder="Reporting Person">
+                <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>
+              </select>
+            </div>
+            <div *ngIf="reportingPerson_id.invalid&&reportingPerson_id.touched " [ngClass]="'error'"
+              class='alert alert-danger'>
+              Reporting Person is required.
+            </div>
+          </div>
+          <!--Leave action Input Box-->
+          <div class="form-group">
+            <label class="control-label col-sm-2">Action:</label>
+            <div class="col-sm-4">
+              <select id="action" name="action" required #action='ngModel' class="form-control"
+                [(ngModel)]="leave.action" placeholder="Actin" [disabled]=''>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div *ngIf="action.invalid&&action.touched " [ngClass]="'error'" class='alert alert-danger'>
+              last Name is required.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id='btn_addrecord_title' class="btn btn-success btn-sm " (click)="InsertUpdate(dptData)"></button>
+
+        <button id="btn_close_title" (click)='close()' class="btn btn-danger btn-sm " (click)='close()'
+          data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

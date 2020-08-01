@@ -1,0 +1,25 @@
+.jumbotron {
+    background-color: #f4511e; /* Orange */
+    color: #ffffff;
+    padding: 8px 2px;
+  };
+ 
+  #logo{  
+    position:relative;
+    margin-right:278px;
+  }
+a.nav-link{
+    font-size: 23px;
+    margin-left: 23px;
+}
+.jumbotron  {
+
+  margin-bottom: 0px;
+}
+.navbar{
+  padding: 0px;
+}
+
+#hoverstyle:hover{
+  background-color:blueviolet;
+}

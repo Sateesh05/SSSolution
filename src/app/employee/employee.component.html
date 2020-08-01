@@ -1,0 +1,204 @@
+<div class="container">
+  <div class="container-max pt-4" id="employee_table">
+    <div class="row">
+      <div class="col-sm-12">
+        <span style="color:rgb(206, 170, 9);font-size:27px;margin-left: 100px;" id=dept_title></span>
+        <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
+          (click)="OpenPopup(0)" data-toggle="modal" data-target="#myModal">
+          Add New Employee
+        </button>
+      </div>
+    </div>
+    <div class="table table-responsive">
+      <table class="table table-bordered
+                    table-hover
+                    table-stripped
+                    table-condensed">
+        <thead class="bg-info">
+          <tr>
+            <th>S.NO</th>
+            <th>EMPLOYEE NAME</th>
+
+            <th>MOBILE NO</th>
+            <th>EMAIL</th>
+
+            <th>Department</th>
+
+            <th>Role</th>
+            <th *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Edit</th>
+            <th *ngIf='isShow!'>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let x of employeeResult; let i=index">
+            <td>{{i+1}}</td>
+            <td>{{x.name}}</td>
+
+            <td>{{x.mobileNumber}}</td>
+            <td>{{x.email}}</td>
+
+            <td>{{x.department}}</td>
+
+
+            <td [ngClass]="{'text-primary':x.role==='TeamManager',
+                             'text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
+            <td *ngIf='isShow'><button class=" glyphicon-pencil" (click)="OpenPopup(x)">Update </button></td>
+            <td *ngIf='isShow'><button class="glyphicon glyphicon-trash" (click)="Delete(x.id)">delete </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="department_Modal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 id='m_title' class="modal-title"></h4>
+        <button (click)='close()' class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form #employeeData="ngForm">
+          <div class="row col-sm-12">
+            <!--Employee name input box-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee name</label>
+              <input type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" name="name"
+                #name='ngModel' required>
+              <div *ngIf="name.invalid&&name.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee name is required.
+              </div>
+            </div>
+            <!--Employee gender-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Gender</label>
+              <select id="m_gender" name="gender" required #gender='ngModel' class="form-control"
+                [(ngModel)]="employee.gender">
+                <option value="Male">Male</option>
+                <option value='Female'>Female</option>
+                <option value='Third Gender'>Third Gender</option>
+              </select>
+              <div *ngIf="gender.invalid&&gender.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee name is required.
+              </div>
+            </div>
+            <!--Employee age-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Age</label>
+              <input type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" name="age" #age='ngModel'
+                required>
+              <div *ngIf="age.invalid&&age.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Age is required.
+              </div>
+            </div>
+          </div>
+          <div class="row col-sm-12">
+            <!--Employee Experiance-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Experiance</label>
+              <input type="text" id="m_experiance" class="form-control" [(ngModel)]="employee.experiance"
+                name="experiance" #experiance='ngModel' required>
+              <div *ngIf="experiance.invalid&&experiance.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Experiance is required.
+              </div>
+            </div>
+            <!--Employee mpbile no-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Mobile Number</label>
+              <input type="text" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
+                name="mobileNumber" #mobileNumber='ngModel' required>
+              <div *ngIf="mobileNumber.invalid&&mobileNumber.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Mobile Number is required.
+              </div>
+            </div>
+            <!--Employee email-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Email</label>
+              <input type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" name="email"
+                #email='ngModel' required>
+              <div *ngIf="email.invalid&&email.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Email is required.
+              </div>
+            </div>
+          </div>
+          <!--Employee password-->
+          <div class="row col-sm-12">
+            <div class="col-sm-4 form-group ">
+              <label>Employee Password</label>
+              <input type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" name="password"
+                #password='ngModel' required />
+              <div *ngIf="password.invalid&&password.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Password is required.
+              </div>
+            </div>
+            <!--Employee joiningdate-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Joining Date</label>
+              <input type="date" id="m_JoiningDate" class="form-control" [(ngModel)]="employee.dateOfJoining"
+                name="dateOfJoining" #dateOfJoining="ngModel" required />
+              <div *ngIf="dateOfJoining.invalid && dateOfJoining.touched " [ngClass]="'error'"
+                class='alert alert-danger'>
+                Employee dateOfJoining is required.
+              </div>
+            </div>
+            <!--Employee department-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Department</label>
+              <select id="m_department" name="department_id" required #department_id='ngModel' class="form-control"
+                [(ngModel)]="employee.department_id">
+                <option value="" disabled selected="selected" value>--Please choose covid status--</option>
+                <option *ngFor="let x of deportmentRecords" value="{{x.id}}">{{x.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row col-sm-12">
+            <!--Employee address-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Address</label>
+              <input type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" name="address"
+                #address='ngModel' required>
+              <div *ngIf="address.invalid&&address.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Address is required.
+              </div>
+            </div>
+            <!--Employee role-->
+            <div class="col-sm-4 form-group ">
+              <label>Employee Role</label>
+              <select id="m_role" name="role" required #role='ngModel' class="form-control" [(ngModel)]="employee.role">
+                <option value="" disabled selected="selected" value>--Please choose Employee Role--</option>
+                <option value="TeamManager">Team Manager</option>
+                <option value="TeamMember">Team Member</option>
+              </select>
+              <div *ngIf="role.invalid&&role.touched " [ngClass]="'error'" class='alert alert-danger'>
+                Employee Role is required.
+              </div>
+            </div>
+            <!--Employee Designation input box-->
+            <div class="col-sm-4 form-group">
+              <label>Employee Designation</label>
+              <input type="text" id="m_designation" class="form-control" [(ngModel)]="employee.designation"
+                name="designation" required error #designation='ngModel'>
+              <div *ngIf="designation.invalid&&designation.touched " [ngClass]="'error'" class='alert alert-danger'>
+                designation is required.
+              </div>
+            </div>
+          </div>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="submit" id='btn_title' class="btn btn-success" (click)='InsertUpdate()'
+              data-dismiss="modal"></button>
+            <button type="button" id='btn_close_title' (click)='close()' class="btn btn-danger"
+              data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

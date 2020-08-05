@@ -1,6 +1,5 @@
-<div class="container">
-  <div class="container-max pt-4" id="employee_table">
-    <div class="row">
+  <div class="container" id="employee_table">
+
       <div class="col-sm-12">
         <span style="color:rgb(206, 170, 9);font-size:27px;margin-left: 100px;" id=dept_title></span>
         <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
@@ -8,7 +7,7 @@
           Add New Employee
         </button>
       </div>
-    </div>
+    
     <div class="table table-responsive">
       <table class="table table-bordered
                     table-hover
@@ -27,8 +26,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let x of employeeResult; let i=index">
-            <td>{{i+1}}</td>
+          <tr *ngFor="let x of employeeResult|paginate:config;">
+            <td>{{x.s_no}}</td>
             <td>{{x.name}}</td>
 
             <td>{{x.mobileNumber}}</td>
@@ -45,10 +44,8 @@
           </tr>
         </tbody>
       </table>
+      <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
     </div>
-  </div>
-
-
 </div>
 
 <!-- The Modal -->
@@ -150,7 +147,7 @@
               <label>Employee Department</label>
               <select id="m_department" name="department_id" required #department_id='ngModel' class="form-control"
                 [(ngModel)]="employee.department_id">
-                <option value="" disabled selected="selected" value>--Please choose covid status--</option>
+                <option value=""  selected="selected" value>--Please choose covid status--</option>
                 <option *ngFor="let x of deportmentRecords" value="{{x.id}}">{{x.name}}</option>
               </select>
             </div>

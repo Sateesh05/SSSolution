@@ -5,7 +5,8 @@ import { LeaveService } from '../leave/leave.service';
 import { employeeService } from '../employee/employee.service';
 import { departmentService } from '../department/department.service';
 import { HttpErrorResponse } from '@angular/common/http';
-declare var jQuery:any;
+import { DatePipe } from '@angular/common';
+declare var jQuery: any;
 @Component({
   selector: 'app-leave-management',
   templateUrl: './leave-management.component.html',
@@ -18,27 +19,34 @@ export class LeaveManagementComponent implements OnInit {
   public leaveResult = new Array<Leave>();
   public isShow: boolean;
   public user = new Leave();
+  config: any;
   constructor(public service: LeaveService,
     private empService: employeeService,
     private departmentService: departmentService) {
-      var item = localStorage.getItem('deptId');
-      var itemobj = JSON.parse(item);
-      this.user = itemobj;
-      this.user.reportingPerson_id = this.user.id;
-      //console.log(this.user.role);  
+    var item = localStorage.getItem('deptId');
+    var itemobj = JSON.parse(item);
+    this.user = itemobj;
+    this.user.reportingPerson_id = this.user.id;
+    //console.log(this.user.role);
     if (this.user.role == "TeamManager" || this.user.role == "admin") {
       this.isShow = true;
     } else {
       this.isShow = false;
     }
-  }
+
+  };
 
   ngOnInit(): void {
     this.GetEmployeeByRole(this.role);
     jQuery('#btn_title').html('Apply Leave');
     this.GetAllLeaveRecords(this.user);
     //console.log(this.reportingPerson_id)
-    jQuery('#dept_title').html(this.user.department);
+    jQuery('#leave_dept_title').html(this.user.department);
+    this.config = {
+      itemsPerPage: 5,
+      currentPage: 1,
+      totalItems: this.leaveResult.length
+    };
   };
   //Error Handling Method
   public ErrorCallBack = (err: HttpErrorResponse) => {
@@ -52,7 +60,6 @@ export class LeaveManagementComponent implements OnInit {
   department_Array: any[] = [];
   Ids_Array: any[] = [];
   GetAllLeaveRecords(user) {
-    
     this.service.GetLeaveRecords(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
@@ -60,13 +67,13 @@ export class LeaveManagementComponent implements OnInit {
         this.service.GetLeaveRecords(user).subscribe((posRes) => {
           if (posRes) {
             this.leaveResult = posRes;
+            this.leaveResult.map((element, index) => { return element.s_no = index + 1 });
             console.log(this.leaveResult);
             //collect and store resulted element ids
             this.leaveResult.filter(ele => this.Ids_Array.push(ele.userid));
             console.log(this.Ids_Array);
             this.Ids_Array = [... new Set(this.Ids_Array)];
             this.Ids_Array.forEach(elem => this.empService.GetEmployeeByid(elem).subscribe((posResult) => {
-              
               let filterResulte = this.leaveResult.filter(el => el.userid == elem);
               filterResulte.forEach(element => element.name = posResult[0].name)
             }), this.ErrorCallBack)
@@ -126,42 +133,41 @@ export class LeaveManagementComponent implements OnInit {
     }, this.ErrorCallBack);
 
   };
-  //Open Popup Method
+  pipe = new DatePipe('en-US');
   actionItem_array: string[] = [];
   public filterData;
   OpenPopup(item) {
     if (item) {
-      debugger;
-      var date = new Date(item.dateOfleave);
-      item.dateOfleave = date.getFullYear() + '-' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '-' + ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)));
+      var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
+      item.dateOfleave = date;
       this.leave = item;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
       jQuery('#action').prop('disabled', false);
       jQuery('#Newdepartment').modal('show');
     } else {
-       this.service.GetLeaveRecordByUserId(this.user.id).subscribe((posRes) => {
-         console.log(posRes)
-         this.filterData = posRes.filter(
-           function isBigEnough(element, index, array) {
-             return (element.action == 'Pending' || element.action == 'Approved');
-           }
-         );
-         console.log(this.filterData.length);
-     if (this.filterData.length < 5) {
-        jQuery('#action').prop('disabled', false);
-        this.leave.name = this.user.name;
-        this.leave.userid = this.user.userid;
-        this.leave.action = 'Pending'
-        jQuery('#action').prop('disabled', true);
-        jQuery('#m_title').html('Leave Request');
-        jQuery('#btn_addrecord_title').html('Apply');
-      
-       jQuery('#Newdepartment').modal('show');
-      }else{
-        alert('you have exceeds yours  5 lives limit ')
-      };
-    }, this.ErrorCallBack);
+      this.service.GetLeaveRecordByUserId(this.user.id).subscribe((posRes) => {
+        console.log(posRes)
+        this.filterData = posRes.filter(
+          function isBigEnough(element, index, array) {
+            return (element.action == 'Pending' || element.action == 'Approved');
+          }
+        );
+        console.log(this.filterData.length);
+        if (this.filterData.length < 5) {
+          jQuery('#action').prop('disabled', false);
+          this.leave.name = this.user.name;
+          this.leave.userid = this.user.userid;
+          this.leave.action = 'Pending'
+          jQuery('#action').prop('disabled', true);
+          jQuery('#m_title').html('Leave Request');
+          jQuery('#btn_addrecord_title').html('Apply');
+
+          jQuery('#Newdepartment').modal('show');
+        } else {
+          alert('you have exceeds yours  5 lives limit ')
+        };
+      }, this.ErrorCallBack);
     }
   };
   InsertUpdate() {
@@ -198,4 +204,7 @@ export class LeaveManagementComponent implements OnInit {
   close() {
     this.leave = new Leave();
   };
+  pageChanged(event) {
+    this.config.currentPage = event;
+  }
 };

@@ -3,6 +3,7 @@ import { employeeService } from './employee.service';
 import { employee } from './employee';
 import { HttpErrorResponse } from '@angular/common/http';
 import { departmentService } from '../department/department.service';
+import { DatePipe } from '@angular/common';
 declare var jQuery: any;
 @Component({
   selector: 'employee2',
@@ -18,6 +19,8 @@ export class EmployeeComponent implements OnInit {
   public userId: number;
   public userRole: string;
   public isShow: boolean;
+  public config: any;
+  pipe = new DatePipe('en-US');
   constructor(public service: employeeService,
     public departmentService: departmentService) {
     var item = window.localStorage.getItem('deptId');
@@ -39,7 +42,12 @@ export class EmployeeComponent implements OnInit {
   ngOnInit(): void {
     this.GetAllEmployee(this.user.department_id);
     this.getDepartmentRecords()
-    jQuery('#dept_title').html(this.user.department)
+    jQuery('#dept_title').html(this.user.department);
+    this.config = {
+      itemsPerPage: 5,
+      currentPage: 1,
+      totalItems: this.employeeResult.length
+    };
   };
   //Get All EmployeeRecords
   GetAllEmployee(userId) {
@@ -47,6 +55,7 @@ export class EmployeeComponent implements OnInit {
       //debugger;
       if (posRes) {
         this.employeeResult = posRes;
+        this.employeeResult.forEach((element, index) => { element.s_no=index+1})
         console.log(this.employeeResult);
         var deptArray: any;
 
@@ -83,8 +92,8 @@ export class EmployeeComponent implements OnInit {
   //Open Popup Method
   OpenPopup(item) {
     if (item) {
-      var date = new Date(item.dateOfJoining);
-      item.dateOfJoining = date.getFullYear() + '-' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '-' + ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)));
+     var date = this.pipe.transform(new Date(item.dateOfJoining),'yyyy-MM-dd')
+      item.dateOfJoining = date;
       this.employee = item;
       jQuery('#m_title').html('Update Employee');
       jQuery('#btn_title').html('Update');
@@ -99,7 +108,7 @@ export class EmployeeComponent implements OnInit {
     if (this.employee.id > 0) {
       const id = this.employee.id;
       const data = { 'employee': this.employee }
-      
+
       this.service.UpdateEmployeeRecord(id, data).subscribe((posRes) => {
         if (posRes.update === 'success') {
           this.GetAllEmployee(this.user.department_id);
@@ -138,5 +147,8 @@ export class EmployeeComponent implements OnInit {
   //Popup Close Method
   close() {
     this.employee = new employee();
+  };
+  pageChanged(event) {
+    this.config.currentPage = event;
   };
 };

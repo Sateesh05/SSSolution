@@ -7,9 +7,10 @@ import { RouterModule } from '@angular/router';
 import { employeeService } from './employee.service';
 import { departmentService } from '../department/department.service';
 import { LeaveService } from '../leave/leave.service';
+import { NgxPaginationModule } from 'ngx-pagination';
 @NgModule({
     declarations: [EmployeeComponent],
-    imports: [CommonModule, HttpClientModule, FormsModule, RouterModule.forChild([
+  imports: [NgxPaginationModule,CommonModule, HttpClientModule, FormsModule, RouterModule.forChild([
         { path: '', component: EmployeeComponent }
     ])],
     providers: [employeeService, departmentService, LeaveService],

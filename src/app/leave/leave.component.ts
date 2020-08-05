@@ -6,6 +6,7 @@ import { employee } from '../employee/employee';
 import { employeeService } from '../employee/employee.service';
 import { departmentService } from '../department/department.service';
 import { NotificationService } from '../toastr/toastr.service';
+import { DatePipe } from '@angular/common';
 declare var jQuery: any;
 @Component({
   selector: 'index',
@@ -19,7 +20,8 @@ export class LeaveComponent implements OnInit {
   public leaveResult = new Array<Leave>();
   public isShowLeave: boolean;
   public user = new Leave();
-
+  public config:any;
+  pipe = new DatePipe('en-US');
   constructor(public service: LeaveService,
     private empService: employeeService,
     private departmentService: departmentService,
@@ -28,7 +30,7 @@ export class LeaveComponent implements OnInit {
     var itemobj = JSON.parse(item);
     this.user = itemobj;
     this.user.reportingPerson_id = this.user.id;
-    //console.log(this.user.role);  
+    //console.log(this.user.role);
     if (this.user.role == "TeamManager" || this.user.role == "admin") {
       this.isShowLeave = true;
     } else {
@@ -40,7 +42,11 @@ export class LeaveComponent implements OnInit {
     this.GetEmployeeByRole(this.role);
     jQuery('#leavebtn_title').html('Apply Leave');
     this.GetAllLeaveRecords(this.user.id);
-   
+    this.config = {
+      currentPage:1,
+      itemsPerPage:5,
+      totalItems:this.leaveResult.length
+    };
   };
   showCreateToaster(){
     this.notifyService.showSuccess("Record Added Successfully !!", "Leave Records")
@@ -70,10 +76,12 @@ export class LeaveComponent implements OnInit {
     this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
+       // debugger;
         console.log(this.leaveResult);
         this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
           if (posRes) {
             this.leaveResult = posRes;
+            this.leaveResult.map((element, index) => { element.s_no = index + 1 })
             console.log(this.leaveResult);
             //collect and store resulted element ids
             this.leaveResult.filter(ele => this.Ids_Array.push(ele.userid));
@@ -147,8 +155,9 @@ export class LeaveComponent implements OnInit {
   OpenPopup(item) {
     //debugger;
     if (item) {
-      var date = new Date(item.dateOfleave);
-      item.dateOfleave = date.getFullYear() + '-' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '-' + ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)));
+      var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
+      item.dateOfleave = date;
+
       this.leave = item;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
@@ -195,11 +204,13 @@ export class LeaveComponent implements OnInit {
         if (posRes.insert === 'success') {
           this.GetAllLeaveRecords(this.user.id);
           this.showCreateToaster();
-        };
+        }else{
+          alert(posRes.insert);
+        }
       }, this.ErrorCallBack)
       this.leave = new Leave();
       jQuery('#Newdepartment').modal('hide');
-    
+
     }else this.showLeavePopupWarning();//alert('enter field values')
   };
   //delete Method
@@ -213,5 +224,8 @@ export class LeaveComponent implements OnInit {
   };
   close() {
     this.leave = new Leave();
+  };
+  pageChanged(event){
+    this.config.currentPage=event;
   };
 };

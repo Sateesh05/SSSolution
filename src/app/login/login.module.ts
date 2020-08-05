@@ -10,7 +10,7 @@ import { departmentService } from '../department/department.service';
     declarations: [LoginComponent],
     imports: [CommonModule, HttpClientModule, FormsModule, RouterModule.forChild([
         { path: '', component: LoginComponent }
-        
+
     ])],
     providers: [LoginService,departmentService],
     exports: [LoginComponent]

@@ -5,11 +5,12 @@ import { departmentService } from './department.service';
 import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 
 @NgModule({
     declarations: [DepartmentComponent],
-    imports: [CommonModule, FormsModule, HttpClientModule, RouterModule.forChild([
+  imports: [NgxPaginationModule,CommonModule, FormsModule, HttpClientModule, RouterModule.forChild([
         { path: '', component: DepartmentComponent }
     ])],
     providers: [departmentService],

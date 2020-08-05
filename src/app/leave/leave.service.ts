@@ -21,7 +21,7 @@ export class LeaveService{
     public LeaveRecordGetById(id:any):Observable<any>{
       return this.http.get('http://127.0.0.1:8080/leaveRequest/'+id);
     };
-    public CreateLeaveRecord(data:any):Observable<any>{
+  public CreateLeaveRecord(data: any):Observable<any>{
       //debugger
         return this.http.post('http://127.0.0.1:8080/leaveRequest/',data);
     };

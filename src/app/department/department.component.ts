@@ -16,7 +16,8 @@ export class DepartmentComponent implements OnInit {
   department: any = new department();
   //user role variable
   public userRole: string;
-  
+  config:any;
+
   constructor(public service: departmentService) {
     //get object from localstorage
     var item = window.localStorage.getItem('deptId');
@@ -25,13 +26,21 @@ export class DepartmentComponent implements OnInit {
   }
   ngOnInit(): void {
     // calling get all departmentrecords method
-    this.getDepartmentRecords()
+    this.getDepartmentRecords();
+    this.config = {
+      itemsPerPage: 5,
+      currentPage: 1,
+      totalItems: this.deportmentRecords.length
+    };
   }
   // Department Get Records
   getDepartmentRecords() {
     this.service.getAllDepartmentRecords().subscribe((posRes) => {
       if (posRes) {
         this.deportmentRecords = posRes;
+        this.deportmentRecords.map((element,index)=>{
+          element.s_no = index+1;
+        });
         //console.log(this.deportmentRecords)
       };
     }, (errRes: HttpErrorResponse) => {
@@ -83,7 +92,7 @@ export class DepartmentComponent implements OnInit {
           jQuery("#departmentTable").modal("hide");
         }
       }, this.errCallBack);
-      // this.addErrorMessage();      
+      // this.addErrorMessage();
     }
   };
   //delete record method
@@ -100,6 +109,9 @@ export class DepartmentComponent implements OnInit {
   close() {
     this.department = new department();
   };
+  pageChanged(event) {
+    this.config.currentPage = event;
+  }
 };
 
 

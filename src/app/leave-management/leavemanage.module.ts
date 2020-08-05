@@ -7,10 +7,11 @@ import { LeaveService } from '../leave/leave.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
     declarations: [LeaveManagementComponent],
-    imports: [CommonModule,HttpClientModule,FormsModule,RouterModule.forChild([
+  imports: [NgxPaginationModule, CommonModule, HttpClientModule,FormsModule,RouterModule.forChild([
         {path:'',component:LeaveManagementComponent}
     ])],
     providers: [employeeService,departmentService,LeaveService],

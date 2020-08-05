@@ -22,8 +22,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let x of deportmentRecords; let i=index">
-            <td>{{i+1}}</td>
+          <tr *ngFor="let x of deportmentRecords| paginate: config;">
+            <td>{{x.s_no}}</td>
             <td>{{x.name}}</td>
             <td>{{x.description}}</td>
             <td><button class="glyphicon glyphicon-pencil" (click)="OpenPopup(x)">Update </button></td>
@@ -31,6 +31,7 @@
           </tr>
         </tbody>
       </table>
+      <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
     </div>
   </div>
 </div>

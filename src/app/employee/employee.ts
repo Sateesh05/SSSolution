@@ -1,4 +1,5 @@
 export class employee {
+     s_no:number;
     id:number;
     name:string;
     gender:string;
@@ -14,5 +15,5 @@ export class employee {
     dateOfJoining:Date;
     role:string;
   filter: any;
-   
+
 }

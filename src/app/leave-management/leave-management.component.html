@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
           <div class="col-sm-12">
-            <span style ='font-size: 23px;color: blueviolet;margin-left: 30px;'id ='dept_title'></span>
+            <span style ='font-size: 23px;color: blueviolet;margin-left: 30px;'id ='leave_dept_title'></span>
             <!-- <button id="btn_title" class="btn btn-success glyphicon glyphicon-plus
            glyph bt-sm float-right" (click)="OpenPopup(0)">
             </button> -->
@@ -27,8 +27,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let x of leaveResult; let i=index">
-                <td>{{i+1}}</td>
+              <tr *ngFor="let x of leaveResult|paginate: config;">
+                <td>{{x.s_no}}</td>
                 <td>{{x.name}}</td>
                 <td>{{x.subject}}</td>
                 <td>{{x.reason}}</td>
@@ -41,6 +41,7 @@
               </tr>
             </tbody>
           </table>
+          <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
         </div>
       </div>
   </div>
@@ -123,7 +124,7 @@
         </div>
         <div class="modal-footer">
           <button id='btn_addrecord_title' class="btn btn-success btn-sm " (click)="InsertUpdate()"></button>
-  
+
           <button id="btn_close_title" (click)='close()' class="btn btn-danger btn-sm " (click)='close()'
             data-dismiss="modal">Close</button>
         </div>

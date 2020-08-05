@@ -23,7 +23,7 @@
                                     <a href="" class="profile-info-list-item"><i class="mdi mdi-movie"></i>Medias</a>
                                     <a href="" class="profile-info-list-item"><i class="mdi mdi-account"></i>About</a>
                                 </ul>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>-->
@@ -48,7 +48,6 @@
                                 <span class="about-item-detail">Lorem ipsum dolor
                                     sit amet, consectetur adipisicing elit. Architecto totam, nemo quidem delectus
                                     dolores vero porro inventore perferendis minus perspiciatis.</span> </li>
-
                             <li class="about-items"><i class="mdi mdi-trophy-variant-outline icon-sm "></i>
                                 <span class="about-item-name">Badges:</span><span class="about-item-detail">
                                     <button type="button" class="btn btn-success btn-rounded btn-icon">
@@ -83,7 +82,7 @@
                         <ul class="about">
                             <li class="about-items"><i class="mdi mdi-cake icon-sm "></i>
                                 <span class="about-item-name">Date Of Joining:</span><span
-                                    class="about-item-detail">{{user.dateOfJoining}}</span></li>
+                                    class="about-item-detail">{{user.dateOfJoining|date:'short'}}</span></li>
                             <li class="about-items"><i class="mdi mdi-account icon-sm "></i>
                                 <span class="about-item-name">Gender:</span><span
                                     class="about-item-detail">{{user.gender}}</span></li>

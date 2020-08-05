@@ -26,8 +26,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let x of leaveResult; let i=index">
-            <td>{{i+1}}</td>
+          <tr *ngFor="let x of leaveResult| paginate:config;">
+            <td>{{x.s_no}}</td>
             <td>{{x.name}}</td>
             <td>{{x.subject}}</td>
             <td>{{x.reason}}</td>
@@ -41,6 +41,7 @@
           </tr>
         </tbody>
       </table>
+      <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
     </div>
   </div>
 </div>

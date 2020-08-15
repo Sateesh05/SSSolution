@@ -4,6 +4,10 @@ import { employee } from './employee';
 import { HttpErrorResponse } from '@angular/common/http';
 import { departmentService } from '../department/department.service';
 import { DatePipe } from '@angular/common';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NotificationService } from '../toastr/toastr.service';
+import Swal from 'sweetalert2';
 declare var jQuery: any;
 @Component({
   selector: 'employee2',
@@ -20,15 +24,32 @@ export class EmployeeComponent implements OnInit {
   public userRole: string;
   public isShow: boolean;
   public config: any;
+  public isFormSubmitted: boolean = null;
+  public employeeData: FormGroup = new FormGroup({
+    name: new FormControl(null, [Validators.required]),
+    gender: new FormControl(null, [Validators.required]),
+    age: new FormControl(null, [Validators.required]),
+    experiance: new FormControl(null, [Validators.required]),
+    mobileNumber: new FormControl(null, [Validators.required]),
+    email: new FormControl(null, [Validators.required]),
+    password: new FormControl(null, [Validators.required]),
+    dateOfJoining: new FormControl(null, [Validators.required]),
+    department_id: new FormControl(null, [Validators.required]),
+    address: new FormControl(null, [Validators.required]),
+    role: new FormControl(null, [Validators.required]),
+    designation: new FormControl(null, [Validators.required])
+  })
   pipe = new DatePipe('en-US');
   constructor(public service: employeeService,
-    public departmentService: departmentService) {
+    public departmentService: departmentService,
+    private notifyService: NotificationService,
+    private SpinnerService: NgxSpinnerService) {
     var item = window.localStorage.getItem('deptId');
     var itemobj = JSON.parse(item);
     this.user = itemobj;
     //this.userId = JSON.parse(item).department_id;
     //this.userRole = JSON.parse(item).role;
-    console.log(this.userId, this.userRole,item);
+    console.log(this.userId, this.userRole, item);
     this.isShow = (this.user.role == "TeamManager" || this.user.role == "admin") ? true : false;
   };
   getDepartmentRecords() {
@@ -37,11 +58,12 @@ export class EmployeeComponent implements OnInit {
         this.deportmentRecords = posRes;
         //console.log(this.deportmentRecords)
       };
-    },this.ErrorCallBack);
+    }, this.ErrorCallBack);
   };
   ngOnInit(): void {
     this.GetAllEmployee(this.user.department_id);
-    this.getDepartmentRecords()
+    this.isFormSubmitted = false;
+    this.getDepartmentRecords();
     jQuery('#dept_title').html(this.user.department);
     this.config = {
       itemsPerPage: 5,
@@ -49,13 +71,32 @@ export class EmployeeComponent implements OnInit {
       totalItems: this.employeeResult.length
     };
   };
+  showCreateToaster() {
+    this.notifyService.showSuccess("Record Added Successfully !!", "Employee Records")
+  };
+  showUpdateToaster() {
+    this.notifyService.showSuccess("Record Updated Successfully !!", "Employee Records")
+  };
+  showDeleteToaster() {
+    this.notifyService.showSuccess("Record Deleted Successfully !!", "Employee Records")
+  };
+  showLeavePopupWarning() {
+    this.notifyService.showWarning('fill the Employee Request popup fields!!', 'Employee Request popup')
+  };
+  showErrormessage() {
+    this.notifyService.showError('failed Record added!!', 'Employee Records')
+  };
+  showWarningMessage() {
+    this.notifyService.showWarning('fill the popup fields', 'Warning')
+  }
   //Get All EmployeeRecords
   GetAllEmployee(userId) {
+    this.SpinnerService.show();
     this.service.GetEmployeeList(userId).subscribe((posRes) => {
       //debugger;
       if (posRes) {
         this.employeeResult = posRes;
-        this.employeeResult.forEach((element, index) => { element.s_no=index+1})
+        this.employeeResult.forEach((element, index) => { element.s_no = index + 1 })
         console.log(this.employeeResult);
         var deptArray: any;
 
@@ -75,6 +116,7 @@ export class EmployeeComponent implements OnInit {
             let filterResult = this.employeeResult.filter(item => item.department_id == element);
             filterResult.forEach(element => {
               element.department = response[0].name;
+              this.SpinnerService.hide();
             });
           }, (err: HttpErrorResponse) => { console.log(err); });
         });
@@ -87,12 +129,13 @@ export class EmployeeComponent implements OnInit {
       console.log('server side error');
     } else {
       console.log('client side error')
+      this.showErrormessage();
     };
   };
   //Open Popup Method
-  OpenPopup(item) {
+  empOpenPopup(item) {
     if (item) {
-     var date = this.pipe.transform(new Date(item.dateOfJoining),'yyyy-MM-dd')
+      var date = this.pipe.transform (new Date(item.dateOfJoining),'yyyy-MM-dd')
       item.dateOfJoining = date;
       this.employee = item;
       jQuery('#m_title').html('Update Employee');
@@ -101,40 +144,72 @@ export class EmployeeComponent implements OnInit {
       jQuery('#m_title').html('Add New Employee');
       jQuery('#btn_title').html('insert');
     }
-    jQuery("#department_Modal").modal("show");
+    jQuery("#employeeModal").modal("show");
   };
   //Insert and Update Method
-  InsertUpdate() {
+  empInsertUpdate() {
+   //debugger;
     if (this.employee.id > 0) {
       const id = this.employee.id;
       const data = { 'employee': this.employee }
-
-      this.service.UpdateEmployeeRecord(id, data).subscribe((posRes) => {
-        if (posRes.update === 'success') {
-          this.GetAllEmployee(this.user.department_id);
-        };
-      }, this.ErrorCallBack)
-      this.employee = new employee();
-      jQuery("#myModal").modal("hide");
+      this.isFormSubmitted = true;
+      if (this.employeeData.valid) {
+        this.SpinnerService.show();
+        this.service.UpdateEmployeeRecord(id, data).subscribe((posRes) => {
+          if (posRes.update === 'success') {
+            this.GetAllEmployee(this.user.department_id);
+            this.isFormSubmitted = null;
+            this.employee = new employee();
+            this.SpinnerService.hide();
+            this.showUpdateToaster()
+            jQuery("#employeeModal").modal("hide");
+          };
+        }, this.ErrorCallBack)
+      } else {
+        this.showWarningMessage();
+      }
     } else {
-      debugger
-      this.service.CreateEmployee({ 'employee': this.employee }).subscribe((posRes) => {
-        console.log(posRes);
-        if (posRes.insert === 'success') {
-          this.GetAllEmployee(this.user.department_id);
-        };
-      }, this.ErrorCallBack);
+      this.isFormSubmitted = true;
+      if (this.employeeData.valid) {
+        this.SpinnerService.show();
+        this.service.CreateEmployee({ 'employee': this.employee }).subscribe((posRes) => {
+          if (posRes.insert === 'success') {
+            this.GetAllEmployee(this.user.department_id);
+            this.isFormSubmitted = null;
+            this.employee = new employee();
+            this.SpinnerService.hide();
+            this.showCreateToaster();
+            jQuery("#employeeModal").modal("hide");
+          };
+        }, this.ErrorCallBack);
+     } else {
+        this.showWarningMessage();
+     }
     };
-    this.employee = new employee();
-    jQuery("#myModal").modal("hide");
   };
   //Delete EmployeeRecord
   Delete(id) {
-    this.service.DeleteEmployee(id).subscribe((posRes) => {
-      if (posRes.delete === 'success') {
-        this.GetAllEmployee(this.user.department_id);
-      };
-    }, this.ErrorCallBack)
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this imaginary file!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.SpinnerService.show();
+        this.service.DeleteEmployee(id).subscribe((posRes) => {
+          if (posRes.delete === 'success') {
+            this.GetAllEmployee(this.user.department_id);
+            this.showDeleteToaster();
+            this.SpinnerService.hide();
+          };
+        }, this.ErrorCallBack)
+      } else if (result.isDismissed) {
+        this.showWarningMessage();
+      }
+    })
   };
   //get EmployeeById Method
   GetEmployeeByDepartment(id) {
@@ -146,6 +221,7 @@ export class EmployeeComponent implements OnInit {
   }
   //Popup Close Method
   close() {
+    this.isFormSubmitted = null;
     this.employee = new employee();
   };
   pageChanged(event) {

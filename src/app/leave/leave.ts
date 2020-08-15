@@ -1,6 +1,6 @@
 
 export class Leave{
-   s_no:number;
+    s_no:number;
     id:number;
     userid:number;
     subject:string;

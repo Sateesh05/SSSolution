@@ -130,14 +130,16 @@ app.post('/department', (req, res) => {
 });
 //insert employee method
 app.post('/employee', (req, res) => {
-  connection.query(`insert into employee(name,gender,age,experiance,mobileNumber,email,password
+  let query = `insert into employee(name,gender,age,experiance,mobileNumber,email,password
    ,address,dateOfJoining,designation,department_id,role)
   values('${req.body.employee.name}','${req.body.employee.gender}','${req.body.employee.age}',
   '${req.body.employee.experiance}',${req.body.employee.mobileNumber},'${req.body.employee.email}',
   '${req.body.employee.password}','${req.body.employee.address}',
   '${req.body.employee.dateOfJoining}','${req.body.employee.designation}',
-  ${req.body.employee.department_id},
-  '${req.body.employee.role}')`, (err, result) => {
+  ${+req.body.employee.department_id},
+  '${req.body.employee.role}')`;
+  //console.log(query);
+  connection.query(query, (err, result) => {
     if (err) throw err;
     else {
       res.send({ insert: 'success' });

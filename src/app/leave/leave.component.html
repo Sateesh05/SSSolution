@@ -1,14 +1,13 @@
-<div>
   <div class="container">
-    <div class="row">
       <div class="col-sm-12">
         <span style='font-size: 23px;color: blueviolet;margin-left: 30px;' id='leavedept_title'></span>
         <button id="leavebtn_title" class="btn btn-success glyphicon glyphicon-plus
            glyph bt-sm float-right" (click)="OpenPopup(0)">
         </button>
       </div>
-    </div>
-    <div class="table table-responsive">
+      <div class="row" style="margin-top:10px;margin-bottom: 10px;">
+      </div>
+    <div >
       <table class="table table-bordered
                       table-hover
                       table-stripped
@@ -43,9 +42,12 @@
       </table>
       <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
     </div>
+    <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+      <p style="color: white">Please Wait. </p>
+    </ngx-spinner>
   </div>
-</div>
-<div class="modal fade" id="Newdepartment">
+
+<div class="modal fade" id="leaveModal">
   <div class="modal-dialog modal-md" data-keyboard="false" data-backdrop="satic">
     <div class="modal-content modal-xl">
       <div class="modal-header">
@@ -56,27 +58,27 @@
       </div>
       <div class="modal-xl">
         <!--popup form-->
-        <form #dptData="ngForm" class="form-horizontal">
+        <form [formGroup] = "formData" novalidate>
           <!--Leave Subject input box   -->
           <div class=" form-group">
             <label class="control-label col-sm-2"> Subject:</label>
             <div class="col-sm-10">
-              <input type="text" id="m_description" class="form-control" [(ngModel)]="leave.subject" name="subject"
-                placeholder="" required error #subject='ngModel'>
+              <input type="text" id="m_description" class="form-control" [(ngModel)]="leave.subject" formControlName="subject"
+              [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['subject'].hasError('required')}" >
             </div>
-            <div *ngIf="subject.invalid&&subject.touched " [ngClass]="'error'" class='alert alert-danger'>
-              Subject is required.
+            <div style='color:red'*ngIf="isFormSubmitted && formData.controls['subject'].hasError('required') " >
+              *Subject is required.
             </div>
           </div>
           <!--Leave Reason input box-->
           <div class="form-group">
             <label class="control-label col-sm-2">Reason:</label>
             <div class="col-sm-10">
-              <textarea rows="5" id="m_description" class="form-control" [(ngModel)]="leave.reason" name="reason"
-                placeholder=" text here" required error #reason='ngModel'></textarea>
+              <textarea rows="5" id="m_description" class="form-control" [(ngModel)]="leave.reason" formControlName="reason"
+               [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reason'].hasError('required')}" ></textarea>
             </div>
-            <div *ngIf="reason.invalid&&reason.touched " [ngClass]="'error'" class='alert alert-danger'>
-              Reason is required.
+            <div style='color:red' *ngIf="isFormSubmitted && formData.controls['reason'].hasError('required') ">
+              *Reason is required.
             </div>
           </div>
           <!--Date Of Leave-->
@@ -84,45 +86,44 @@
             <label class="control-label col-sm-4">Date of Leave:</label>
             <div class="col-sm-6">
               <input type="date" id="m_DateOfleave" class="form-control" [(ngModel)]="leave.dateOfleave"
-                name="dateOfleave" #dateOfleave="ngModel" required />
+                formControlName="dateOfleave" [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['dateOfleave'].hasError('required')}" >
             </div>
-            <div *ngIf="dateOfleave.invalid && dateOfleave.touched " [ngClass]="'error'" class='alert alert-danger'>
-              Employee Date of leave is required.
+            <div style='color:red' *ngIf="isFormSubmitted && formData.controls['dateOfleave'].hasError('required') " >
+              *Employee Date of leave is required.
             </div>
           </div>
           <!--Leave Reporting Person Input Box-->
           <div class="form-group ">
             <label class="control-label col-sm-2">ReportingPerson:</label>
             <div class="col-sm-6">
-              <select id="m_ReportingPerson_id" name="reportingPerson_id" required #reportingPerson_id='ngModel'
-                class="form-control" [(ngModel)]="leave.reportingPerson_id" placeholder="Reporting Person">
+              <select id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control" [(ngModel)]="leave.reportingPerson_id"
+              [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')}">
                 <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>
               </select>
             </div>
-            <div *ngIf="reportingPerson_id.invalid&&reportingPerson_id.touched " [ngClass]="'error'"
-              class='alert alert-danger'>
-              Reporting Person is required.
+            <div style='color:red' *ngIf="isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')  ">
+              *Reporting Person is required.
             </div>
           </div>
           <!--Leave action Input Box-->
           <div class="form-group">
             <label class="control-label col-sm-2">Action:</label>
             <div class="col-sm-4">
-              <select id="action" name="action" required #action='ngModel' class="form-control"
-                [(ngModel)]="leave.action" placeholder="Actin" [disabled]=''>
+              <select id="action" formControlName="action"  class="form-control"
+                [(ngModel)]="leave.action" [disabled]='' [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['action'].hasError('required')}">
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
               </select>
             </div>
-            <div *ngIf="action.invalid&&action.touched " [ngClass]="'error'" class='alert alert-danger'>
-              last Name is required.
+            <div style='color:red' *ngIf="isFormSubmitted && formData.controls['action'].hasError('required') " >
+              *action is required.
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button id='btn_addrecord_title' class="btn btn-success btn-sm " (click)="InsertUpdate(dptData)"></button>
+        <button id='btn_addrecord_title' class="btn btn-success btn-sm " (click)="InsertUpdate()"></button>
 
         <button id="btn_close_title" (click)='close()' class="btn btn-danger btn-sm " (click)='close()'
           data-dismiss="modal">Close</button>
@@ -130,3 +131,4 @@
     </div>
   </div>
 </div>
+

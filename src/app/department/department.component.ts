@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { departmentService } from './department.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { department } from './department';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NgxSpinnerService } from "ngx-spinner";
+import { NotificationService } from '../toastr/toastr.service';
+import Swal from 'sweetalert2';
 
 declare var jQuery: any;
 @Component({
@@ -16,9 +20,17 @@ export class DepartmentComponent implements OnInit {
   department: any = new department();
   //user role variable
   public userRole: string;
-  config:any;
+  //pagination configaration set up obj variable declaration
+  config: any;
+  public isFormSubmitted: boolean = null;
 
-  constructor(public service: departmentService) {
+  public dptData: FormGroup = new FormGroup({
+    name: new FormControl(null, [Validators.required]),
+    description: new FormControl(null, [Validators.required]),
+  });
+  constructor(public service: departmentService,
+    private notifyService: NotificationService,
+    private SpinnerService: NgxSpinnerService) {
     //get object from localstorage
     var item = window.localStorage.getItem('deptId');
     //storing the data of object in variable
@@ -27,19 +39,41 @@ export class DepartmentComponent implements OnInit {
   ngOnInit(): void {
     // calling get all departmentrecords method
     this.getDepartmentRecords();
+    this.isFormSubmitted = false;
     this.config = {
       itemsPerPage: 5,
       currentPage: 1,
       totalItems: this.deportmentRecords.length
     };
+  };
+  showCreateToaster() {
+    this.notifyService.showSuccess("Record Added Successfully !!", "Department Records")
+  };
+  showUpdateToaster() {
+    this.notifyService.showSuccess("Record Updated Successfully !!", "Department Records")
+  };
+  showDeleteToaster() {
+    this.notifyService.showSuccess("Record Deleted Successfully !!", "Department Records")
+  };
+  showLeavePopupWarning() {
+    this.notifyService.showWarning('fill the Leve Request popup fields!!', 'Department Request popup')
+  };
+  showErrormessage() {
+    this.notifyService.showError('failed Record added!!', 'DepartMent Records')
+  };
+  showWarningMessage() {
+    this.notifyService.showWarning('fill the popup fields', 'Warning')
   }
+
   // Department Get Records
   getDepartmentRecords() {
+    this.SpinnerService.show();
     this.service.getAllDepartmentRecords().subscribe((posRes) => {
       if (posRes) {
         this.deportmentRecords = posRes;
-        this.deportmentRecords.map((element,index)=>{
-          element.s_no = index+1;
+        this.deportmentRecords.map((element, index) => {
+          element.s_no = index + 1;
+          this.SpinnerService.hide();
         });
         //console.log(this.deportmentRecords)
       };
@@ -51,6 +85,7 @@ export class DepartmentComponent implements OnInit {
   public errCallBack = (errRes: HttpErrorResponse) => {
     if (errRes.error instanceof Error) {
       console.log('client side error');
+      this.showErrormessage();
     } else {
       console.log('server side error');
     };
@@ -65,49 +100,80 @@ export class DepartmentComponent implements OnInit {
       jQuery("#m_title").html("Add New Record");
       jQuery("#btn_title").html("Insert");
     }
-    jQuery("#departmentTable").modal("show");
+    jQuery("#departmentModel").modal("show");
   };
   //Insert and Update method
   InsertUpdate() {
     if (this.department.id > 0) {
       const data = { 'department': this.department }
       const id = this.department.id;
-      this.service.updateDepartmentRecord(id, data).subscribe((posRes) => {
-       // console.log(posRes);
-        if (posRes.update === "success") {
-          this.department = new department();
-          this.getDepartmentRecords();
-          jQuery("#departmentTable").modal("hide");
-          alert('record updated successfully');
-        };
-      }, this.errCallBack);
+      this.SpinnerService.show();
+      this.isFormSubmitted = true;
+      if (this.dptData.valid) {
+        this.service.updateDepartmentRecord(id, data).subscribe((posRes) => {
+          // console.log(posRes);
+          if (posRes.update === "success") {
+            this.department = new department();
+            this.getDepartmentRecords();
+            this.SpinnerService.hide();
+            this.showUpdateToaster();
+            jQuery("#departmentModel").modal("hide");
+          };
 
+        }, this.errCallBack);
+      } else {
+        this.showWarningMessage();
+      };
     } else {
-      this.service.createDepartmentRecord({ 'department': this.department }).subscribe((posRes) => {
-        //console.log(posRes)
-        if (posRes.insert === "success") {
-          this.department = new department();
-          this.getDepartmentRecords();
-          alert('record added successfully');
-          jQuery("#departmentTable").modal("hide");
-        }
-      }, this.errCallBack);
-      // this.addErrorMessage();
+      this.isFormSubmitted = true;
+      if (this.dptData.valid) {
+        this.SpinnerService.show();
+        this.service.createDepartmentRecord({ 'department': this.department }).subscribe((posRes) => {
+          //console.log(posRes)
+          if (posRes.insert === "success") {
+            this.department = new department();
+            this.getDepartmentRecords();
+            this.isFormSubmitted = null;
+            this.SpinnerService.hide();
+            this.showCreateToaster();
+            jQuery("#departmentModel").modal("hide");
+          }
+        }, this.errCallBack);
+      } else {
+        this.showWarningMessage();
+      }
     }
   };
   //delete record method
   delete(data) {
-    confirm('do you want delete this record!');
-    this.service.deleteDepartmentRecord({ 'id': data }).subscribe((posRes) => {
-      if (posRes.delete === "success") {
-        this.getDepartmentRecords();
-        //this.recordDletedSucces();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this imaginary file!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+        this.SpinnerService.show();
+        this.service.deleteDepartmentRecord({ 'id': data }).subscribe((posRes) => {
+          if (posRes.delete === "success") {
+            this.getDepartmentRecords();
+            this.SpinnerService.hide();
+            this.showDeleteToaster();
+            //this.recordDletedSucces();
+          }
+        }, this.errCallBack);
+      } else if (result.isDismissed) {
+        console.log('Clicked No, File is safe!');
       }
-    }, this.errCallBack);
+    })
   };
   // popup close Method
   close() {
     this.department = new department();
+    this.isFormSubmitted = null;
   };
   pageChanged(event) {
     this.config.currentPage = event;

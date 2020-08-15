@@ -7,7 +7,7 @@
         </button>
       </div>
     </div>
-    <div class="table table-responsive">
+    <div class="table-responsive-sm">
       <table class="table table-bordered
                       table-hover
                       table-stripped
@@ -35,7 +35,9 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="departmentTable">
+
+
+<div class="modal fade" id="departmentModel">
   <div class="modal-dialog modal-md" data-keyboard="false" data-backdrop="satic">
     <div class="modal-content ">
       <div class="modal-header">
@@ -46,26 +48,26 @@
       </div>
       <div class="modal-body">
         <!--insert form-->
-        <form #dptData="ngForm">
+        <form [formGroup]="dptData" novalidate>
           <div class="row col-sm-12">
             <!--Department name input box-->
             <div class="col-sm-6 form-group ">
               <label>Department Name </label>
-              <input type="text" id="m_dpt_name" class="form-control" [(ngModel)]="department.name" name="name"
-                placeholder="Person First Name" #name='ngModel' required>
-              <div *ngIf="name.invalid&&name.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Department Name is Required.
+              <input type="text" id="m_dpt_name" class="form-control" [(ngModel)]="department.name"
+              formControlName="name"[ngClass]="{'txtBdrColor':isFormSubmitted && dptData.get('name').hasError('required')}">
+              <div style = 'color:rgb(255, 38, 0);'*ngIf= "isFormSubmitted && dptData.get('name').hasError('required') ">
+                *Department Name is Required.
               </div>
             </div>
           </div>
           <div class="row col-sm-12">
             <!--DepartmentDescription input box-->
-            <div class="col-sm-6 form-group">
+            <div class="col-sm-10 form-group">
               <label>Description</label>
-              <input type="text" id="m_description" class="form-control" [(ngModel)]="department.description"
-                name="description" placeholder="Person LastName" required error #description='ngModel'>
-              <div *ngIf="description.invalid&&description.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Description is Required.
+              <textarea type="text" id="m_description" class="form-control" [(ngModel)]="department.description"
+                formControlName="description" [ngClass]="{'txtBdrColor':isFormSubmitted && dptData.get('description').hasError('required')}"></textarea>
+              <div style = 'color:rgb(255, 38, 0);'*ngIf= "isFormSubmitted && dptData.get('description').hasError('required') ">
+                *Description is Required.
               </div>
             </div>
           </div>

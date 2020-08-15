@@ -27,6 +27,9 @@
                         </div>
                     </div>
                 </div>-->
+                <div class="row" style="margin-top:10px;margin-bottom: 10px;">
+                </div>
+
             <div class="col-md-10 grid-margin stretch-card">
                 <div class="card" *ngFor="let user of employee">
                     <div class="card-body">
@@ -100,10 +103,14 @@
                 </div>
             </div>
         </div>
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+          <p style="color: white">Please Wait. </p>
+        </ngx-spinner>
     </div>
+
     <!-- content-wrapper ends -->
     <!-- partial:partials/_footer.html -->
-    <?php include'includes/admin_footer.php' ?>
+    <!-- <?php include'includes/admin_footer.php' ?> -->
     <!-- partial -->
 </div>
 <!-- main-panel ends -->

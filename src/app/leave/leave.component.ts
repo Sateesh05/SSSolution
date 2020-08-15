@@ -7,6 +7,10 @@ import { employeeService } from '../employee/employee.service';
 import { departmentService } from '../department/department.service';
 import { NotificationService } from '../toastr/toastr.service';
 import { DatePipe } from '@angular/common';
+import { NgxSpinnerService } from "ngx-spinner";
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+
 declare var jQuery: any;
 @Component({
   selector: 'index',
@@ -20,45 +24,59 @@ export class LeaveComponent implements OnInit {
   public leaveResult = new Array<Leave>();
   public isShowLeave: boolean;
   public user = new Leave();
-  public config:any;
+  public config: any;
   pipe = new DatePipe('en-US');
+  public isFormSubmitted: boolean = null;
+
   constructor(public service: LeaveService,
     private empService: employeeService,
     private departmentService: departmentService,
-    private notifyService : NotificationService) {
+    private notifyService: NotificationService,
+
+    private SpinnerService: NgxSpinnerService
+  ) {
     var item = localStorage.getItem('deptId');
     var itemobj = JSON.parse(item);
     this.user = itemobj;
     this.user.reportingPerson_id = this.user.id;
-    //console.log(this.user.role);
     if (this.user.role == "TeamManager" || this.user.role == "admin") {
       this.isShowLeave = true;
     } else {
       this.isShowLeave = false;
     }
   };
-  ngOnInit(){
+
+  // Initiate Register FormGroup
+  public formData: FormGroup = new FormGroup({
+    subject: new FormControl(null, [Validators.required]),
+    reason: new FormControl(null, [Validators.required]),
+    dateOfleave: new FormControl(null, [Validators.required]),
+    reportingPerson_id: new FormControl(null, [Validators.required]),
+    action: new FormControl(null, [Validators.required])
+  });
+  ngOnInit() {
     jQuery('#leavedept_title').html(this.user.department);
     this.GetEmployeeByRole(this.role);
     jQuery('#leavebtn_title').html('Apply Leave');
     this.GetAllLeaveRecords(this.user.id);
     this.config = {
-      currentPage:1,
-      itemsPerPage:5,
-      totalItems:this.leaveResult.length
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalItems: this.leaveResult.length
     };
+    this.isFormSubmitted = false;
   };
-  showCreateToaster(){
+  showCreateToaster() {
     this.notifyService.showSuccess("Record Added Successfully !!", "Leave Records")
   };
-  showUpdateToaster(){
+  showUpdateToaster() {
     this.notifyService.showSuccess("Record Updated Successfully !!", "Leave Records")
   };
-  showDeleteToaster(){
+  showDeleteToaster() {
     this.notifyService.showSuccess("Record Deleted Successfully !!", "Leave Records")
   };
-  showLeavePopupWarning(){
-    this.notifyService.showWarning('fill the Leve Request popup fields!!','Leave Request popup')
+  showLeavePopupWarning() {
+    this.notifyService.showWarning('fill the Leve Request popup fields!!', 'Leave Request popup')
   }
   //Error Handling Method
   public ErrorCallBack = (err: HttpErrorResponse) => {
@@ -72,11 +90,11 @@ export class LeaveComponent implements OnInit {
   department_Array: any[] = [];
   Ids_Array: any[] = [];
   GetAllLeaveRecords(user) {
-
+    this.SpinnerService.show();
     this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
-       // debugger;
+        // debugger;
         console.log(this.leaveResult);
         this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
           if (posRes) {
@@ -85,7 +103,7 @@ export class LeaveComponent implements OnInit {
             console.log(this.leaveResult);
             //collect and store resulted element ids
             this.leaveResult.filter(ele => this.Ids_Array.push(ele.userid));
-            console.log(this.Ids_Array);
+            //console.log(this.Ids_Array);
             this.Ids_Array = [... new Set(this.Ids_Array)];
             this.Ids_Array.forEach(elem => this.empService.GetEmployeeByid(elem).subscribe((posResult) => {
 
@@ -94,32 +112,22 @@ export class LeaveComponent implements OnInit {
             }), this.ErrorCallBack)
 
             this.leaveResult.filter(ele => this.department_Array.push(ele.reportingPerson_id));
-            //console.log(this.department_Array)
-            //debugger;
             this.department_Array = [...new Set(this.department_Array)]
             this.department_Array.forEach(element => {
               this.empService.GetEmployeeByid(element).subscribe((posRe) => {
                 let filterResult = this.leaveResult.filter(ele => ele.reportingPerson_id == element)
-                //console.log(filterResult)
                 filterResult.forEach(ele => ele.reportingPersonName = posRe[0].name)
-                //console.log(posRe);
-                //console.log(this.leaveResult)
+                this.SpinnerService.hide();
               }, this.ErrorCallBack)
             });
           }
         }, this.ErrorCallBack)
-
         this.leaveResult.filter(ele => this.department_Array.push(ele.reportingPerson_id));
-        //console.log(this.department_Array)
-        //debugger;
         this.department_Array = [...new Set(this.department_Array)]
         this.department_Array.forEach(element => {
           this.empService.GetEmployeeByid(element).subscribe((posRe) => {
             let filterResult = this.leaveResult.filter(ele => ele.reportingPerson_id == element)
-            //console.log(filterResult)
             filterResult.forEach(ele => ele.reportingPersonName = posRe[0].name)
-            //console.log(posRe);
-            //console.log(this.leaveResult)
           }, this.ErrorCallBack)
         });
       }
@@ -133,9 +141,8 @@ export class LeaveComponent implements OnInit {
       //debugger;
       if (posRes) {
         this.employeeData = posRes;
-        console.log(this.employeeData)
+       // console.log(this.employeeData)
         this.employeeData.filter(element => this.departmentIdArray.push(element.department_id));
-        // console.log(this.departmentIdArray);
         this.departmentIdArray = [...new Set(this.departmentIdArray)];
         this.departmentIdArray.forEach(element => {
           this.departmentService.getByIdDepartmentRecord(element).subscribe((posResponse) => {
@@ -147,7 +154,6 @@ export class LeaveComponent implements OnInit {
         });
       };
     }, this.ErrorCallBack);
-
   };
   //Open Popup Method
   actionItem_array: string[] = [];
@@ -157,12 +163,11 @@ export class LeaveComponent implements OnInit {
     if (item) {
       var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
       item.dateOfleave = date;
-
       this.leave = item;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
       jQuery('#action').prop('disabled', false);
-      jQuery('#Newdepartment').modal('show');
+      jQuery('#leaveModal').modal('show');
     } else {
       this.filterData = this.leaveResult.filter(
         function isBigEnough(element, index, array) {
@@ -178,54 +183,85 @@ export class LeaveComponent implements OnInit {
         jQuery('#action').prop('disabled', true);
         jQuery('#m_title').html('Leave Request');
         jQuery('#btn_addrecord_title').html('Apply');
-        jQuery('#Newdepartment').modal('show');
+        jQuery('#leaveModal').modal('show');
       } else {
         alert('you have exceeds yours  5 lives limit ')
       };
     }
   };
-  InsertUpdate(data) {
+  InsertUpdate() {
+    debugger;
+    this.isFormSubmitted = true;
     if (this.leave.id > 0) {
       const id = this.leave.id;
       const data = { 'leave': this.leave };
-      this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
-        if (poRes.update === 'success') {
-          this.GetAllLeaveRecords(this.user.id);
-          this.showUpdateToaster();
-        }
-      }, this.ErrorCallBack)
-      this.leave = new Leave();
-      jQuery('#Newdepartment').modal('hide');
-    } else if(data.valid){
+      this.SpinnerService.show();
+      if (this.formData.valid) {
+        this.SpinnerService.show();
+        this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
+          if (poRes.update === 'success') {
+            this.GetAllLeaveRecords(this.user.id);
+            this.SpinnerService.hide();
+            this.showUpdateToaster();
+            this.leave = new Leave();
+            jQuery('#leaveModal').modal('hide');
+          }
+        }, this.ErrorCallBack);
+
+      } else {
+        this.showLeavePopupWarning();
+      }
+    } else if (this.formData.valid) {
       this.leave.userid = this.user.id
       const data = { 'leave': this.leave }
-      //debugger;
+      this.SpinnerService.show();
       this.service.CreateLeaveRecord(data).subscribe((posRes) => {
         if (posRes.insert === 'success') {
           this.GetAllLeaveRecords(this.user.id);
+          this.SpinnerService.hide();
+          jQuery('#leaveModal').modal('hide');
           this.showCreateToaster();
-        }else{
+        } else {
           alert(posRes.insert);
+          this.SpinnerService.hide();
         }
       }, this.ErrorCallBack)
+      this.isFormSubmitted = null;
       this.leave = new Leave();
-      jQuery('#Newdepartment').modal('hide');
-
-    }else this.showLeavePopupWarning();//alert('enter field values')
+      jQuery('#leaveModal').modal('hide');
+    } else this.showLeavePopupWarning();
   };
   //delete Method
   delete(id) {
-    this.service.DeleteLeveRecord(id).subscribe((posRes) => {
-      if (posRes.delete === 'success') {
-        this.GetAllLeaveRecords(this.user.id);
-        this.showDeleteToaster();
-      };
-    }, this.ErrorCallBack)
+    //show delete alert model
+    Swal.fire({
+      title: 'Are you sure To Delete it?',
+      text: 'You will not be able to recover this record !',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.SpinnerService.show();
+        this.service.DeleteLeveRecord(id).subscribe((posRes) => {
+          if (posRes.delete === 'success') {
+            this.GetAllLeaveRecords(this.user.id);
+            this.SpinnerService.hide();
+            this.showDeleteToaster();
+          };
+        }, this.ErrorCallBack)
+        console.log('Clicked Yes, File deleted!');
+      } else if (result.isDismissed) {
+        console.log('Clicked No, File is safe!');
+      }
+    })
   };
   close() {
+    this.isFormSubmitted = null;
     this.leave = new Leave();
   };
-  pageChanged(event){
-    this.config.currentPage=event;
+  pageChanged(event) {
+    this.config.currentPage = event;
   };
 };

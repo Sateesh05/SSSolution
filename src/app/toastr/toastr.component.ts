@@ -6,10 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./toastr.component.css']
 })
 export class ToastrComponent implements OnInit {
-
   constructor() { }
-
   ngOnInit(): void {
   }
-
 }

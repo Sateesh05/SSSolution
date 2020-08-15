@@ -6,6 +6,9 @@ import { employeeService } from '../employee/employee.service';
 import { departmentService } from '../department/department.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
+import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 declare var jQuery: any;
 @Component({
   selector: 'app-leave-management',
@@ -20,9 +23,18 @@ export class LeaveManagementComponent implements OnInit {
   public isShow: boolean;
   public user = new Leave();
   config: any;
+  public isFormSubmitted: boolean;
+  public formData: FormGroup = new FormGroup({
+    subject: new FormControl(null, [Validators.required]),
+    reason: new FormControl(null, [Validators.required]),
+    action: new FormControl(null, [Validators.required]),
+    reportingPerson_id: new FormControl(null, [Validators.required]),
+    dateOfleave: new FormControl(null, [Validators.required])
+  })
   constructor(public service: LeaveService,
     private empService: employeeService,
-    private departmentService: departmentService) {
+    private departmentService: departmentService,
+    private SpinnerService: NgxSpinnerService) {
     var item = localStorage.getItem('deptId');
     var itemobj = JSON.parse(item);
     this.user = itemobj;
@@ -33,9 +45,7 @@ export class LeaveManagementComponent implements OnInit {
     } else {
       this.isShow = false;
     }
-
   };
-
   ngOnInit(): void {
     this.GetEmployeeByRole(this.role);
     jQuery('#btn_title').html('Apply Leave');
@@ -47,6 +57,7 @@ export class LeaveManagementComponent implements OnInit {
       currentPage: 1,
       totalItems: this.leaveResult.length
     };
+    this.isFormSubmitted = false;
   };
   //Error Handling Method
   public ErrorCallBack = (err: HttpErrorResponse) => {
@@ -60,6 +71,7 @@ export class LeaveManagementComponent implements OnInit {
   department_Array: any[] = [];
   Ids_Array: any[] = [];
   GetAllLeaveRecords(user) {
+    this.SpinnerService.show();
     this.service.GetLeaveRecords(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
@@ -68,7 +80,6 @@ export class LeaveManagementComponent implements OnInit {
           if (posRes) {
             this.leaveResult = posRes;
             this.leaveResult.map((element, index) => { return element.s_no = index + 1 });
-            console.log(this.leaveResult);
             //collect and store resulted element ids
             this.leaveResult.filter(ele => this.Ids_Array.push(ele.userid));
             console.log(this.Ids_Array);
@@ -79,32 +90,23 @@ export class LeaveManagementComponent implements OnInit {
             }), this.ErrorCallBack)
 
             this.leaveResult.filter(ele => this.department_Array.push(ele.reportingPerson_id));
-            //console.log(this.department_Array)
-            //debugger;
             this.department_Array = [...new Set(this.department_Array)]
             this.department_Array.forEach(element => {
               this.empService.GetEmployeeByid(element).subscribe((posRe) => {
                 let filterResult = this.leaveResult.filter(ele => ele.reportingPerson_id == element)
-                //console.log(filterResult)
                 filterResult.forEach(ele => ele.reportingPersonName = posRe[0].name)
-                //console.log(posRe);
-                //console.log(this.leaveResult)
               }, this.ErrorCallBack)
             });
           }
         }, this.ErrorCallBack)
 
         this.leaveResult.filter(ele => this.department_Array.push(ele.reportingPerson_id));
-        //console.log(this.department_Array)
-        //debugger;
         this.department_Array = [...new Set(this.department_Array)]
         this.department_Array.forEach(element => {
           this.empService.GetEmployeeByid(element).subscribe((posRe) => {
             let filterResult = this.leaveResult.filter(ele => ele.reportingPerson_id == element)
-            //console.log(filterResult)
             filterResult.forEach(ele => ele.reportingPersonName = posRe[0].name)
-            //console.log(posRe);
-            //console.log(this.leaveResult)
+            this.SpinnerService.hide();
           }, this.ErrorCallBack)
         });
       }
@@ -119,7 +121,6 @@ export class LeaveManagementComponent implements OnInit {
         this.employeeData = posRes;
         console.log(this.employeeData)
         this.employeeData.filter(element => this.departmentIdArray.push(element.department_id));
-        // console.log(this.departmentIdArray);
         this.departmentIdArray = [...new Set(this.departmentIdArray)];
         this.departmentIdArray.forEach(element => {
           this.departmentService.getByIdDepartmentRecord(element).subscribe((posResponse) => {
@@ -138,22 +139,24 @@ export class LeaveManagementComponent implements OnInit {
   public filterData;
   OpenPopup(item) {
     if (item) {
+      debugger;
       var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
       item.dateOfleave = date;
       this.leave = item;
+      this.isFormSubmitted = true;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
       jQuery('#action').prop('disabled', false);
-      jQuery('#Newdepartment').modal('show');
+      jQuery('#leaveMangementModel').modal('show');
     } else {
       this.service.GetLeaveRecordByUserId(this.user.id).subscribe((posRes) => {
-        console.log(posRes)
+        //console.log(posRes)
         this.filterData = posRes.filter(
           function isBigEnough(element, index, array) {
             return (element.action == 'Pending' || element.action == 'Approved');
           }
         );
-        console.log(this.filterData.length);
+        //console.log(this.filterData.length);
         if (this.filterData.length < 5) {
           jQuery('#action').prop('disabled', false);
           this.leave.name = this.user.name;
@@ -162,8 +165,7 @@ export class LeaveManagementComponent implements OnInit {
           jQuery('#action').prop('disabled', true);
           jQuery('#m_title').html('Leave Request');
           jQuery('#btn_addrecord_title').html('Apply');
-
-          jQuery('#Newdepartment').modal('show');
+          jQuery('#leaveMangementModel').modal('show');
         } else {
           alert('you have exceeds yours  5 lives limit ')
         };
@@ -174,34 +176,67 @@ export class LeaveManagementComponent implements OnInit {
     if (this.leave.id > 0) {
       const id = this.leave.id;
       const data = { 'leave': this.leave };
-      this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
-        if (poRes.update === 'success') {
-          this.GetAllLeaveRecords(this.user);
-        }
-      }, this.ErrorCallBack)
-      this.leave = new Leave();
-      jQuery('#Newdepartment').modal('hide');
+      if (this.formData.valid) {
+        this.isFormSubmitted = true;
+        this.SpinnerService.show();
+        this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
+          if (poRes.update === 'success') {
+            this.GetAllLeaveRecords(this.user);
+            this.isFormSubmitted = null;
+            this.leave = new Leave();
+            jQuery('#leaveMangementModel').modal('hide');
+            this.SpinnerService.hide();
+          };
+        }, this.ErrorCallBack)
+      } else {
+        alert('fill popup fields')
+      };
     } else {
       this.leave.userid = this.user.id
-      const data = { 'leave': this.leave }
-      this.service.CreateLeaveRecord(data).subscribe((posRes) => {
-        if (posRes.insert === 'success') {
-          this.GetAllLeaveRecords(this.user);
-        };
-      }, this.ErrorCallBack)
-      this.leave = new Leave();
-      jQuery('#Newdepartment').modal('hide');
+      const data = { 'leave': this.leave };
+      if (this.formData.valid) {
+        this.isFormSubmitted = true;
+        this.SpinnerService.show();
+        this.service.CreateLeaveRecord(data).subscribe((posRes) => {
+          if (posRes.insert === 'success') {
+            this.GetAllLeaveRecords(this.user);
+            this.isFormSubmitted = null;
+            this.leave = new Leave();
+            jQuery('#leaveMangementModel').modal('hide');
+            this.SpinnerService.hide();
+          };
+        }, this.ErrorCallBack)
+      } else {
+        alert('alert')
+      }
     };
   };
   //delete Method
   delete(id) {
-    this.service.DeleteLeveRecord(id).subscribe((posRes) => {
-      if (posRes.delete === 'success') {
-        this.GetAllLeaveRecords(this.user);
-      };
-    }, this.ErrorCallBack)
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this imaginary file!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.SpinnerService.show();
+        this.service.DeleteLeveRecord(id).subscribe((posRes) => {
+          if (posRes.delete === 'success') {
+            this.GetAllLeaveRecords(this.user);
+            this.SpinnerService.hide();
+          };
+        }, this.ErrorCallBack)
+        //console.log('Clicked Yes, File deleted!');
+      } else if (result.isDismissed) {
+       // console.log('Clicked No, File is safe!');
+      }
+    })
   };
   close() {
+    this.isFormSubmitted = null;
     this.leave = new Leave();
   };
   pageChanged(event) {

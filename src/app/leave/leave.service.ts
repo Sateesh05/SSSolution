@@ -15,7 +15,6 @@ export class LeaveService{
       return this.http.get('http://127.0.0.1:8080/leaveRequest',opts);
     };
     public getLeaveRecordByUserId(userid:any):Observable<any>{
-     // debugger
       return this.http.get('http://127.0.0.1:8080/leaveRequest/userid/'+userid);
     }
     public LeaveRecordGetById(id:any):Observable<any>{

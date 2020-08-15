@@ -3,6 +3,7 @@ import { User } from '../user'
 import { employeeService } from 'src/app/employee/employee.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { departmentService } from 'src/app/department/department.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 declare var jQuery: any;
 @Component({
   selector: 'app-profile',
@@ -14,7 +15,8 @@ export class ProfileComponent implements OnInit {
   public employee = new Array<User>();
   private User = new User();
   constructor(public service: employeeService,
-    private departementService: departmentService) {
+    private departementService: departmentService,
+    private SpinnerService: NgxSpinnerService) {
     var item = localStorage.getItem('deptId')
     var userdata = JSON.parse(item);
     this.User = userdata;
@@ -30,6 +32,7 @@ export class ProfileComponent implements OnInit {
     };
   }
   GetEmployeeById(Id: number) {
+    this.SpinnerService.show();
     this.service.GetEmployeeByid(Id).subscribe((posRes) => {
       this.employee = posRes;
       console.log(this.employee);
@@ -37,6 +40,10 @@ export class ProfileComponent implements OnInit {
         this.departementService.getByIdDepartmentRecord(elem.department_id).subscribe((poRe) => {
           console.log(poRe);
           this.employee[0].department = poRe[0].name;
+          setTimeout(()=>{
+            this.SpinnerService.hide();
+          },300)
+
         }, this.ErrorHandling)
       });
     }, this.ErrorHandling)

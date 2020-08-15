@@ -1,94 +1,91 @@
-  <div class="container" id="employee_table">
-
-      <div class="col-sm-12">
-        <span style="color:rgb(206, 170, 9);font-size:27px;margin-left: 100px;" id=dept_title></span>
-        <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
-          (click)="OpenPopup(0)" data-toggle="modal" data-target="#myModal">
-          Add New Employee
-        </button>
-      </div>
-    
-    <div class="table table-responsive">
-      <table class="table table-bordered
+<div class="container">
+  <div class="col-sm-12">
+    <span style="color:rgb(206, 170, 9);font-size:27px;margin-left: 100px;" id=dept_title></span>
+    <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
+      (click)="empOpenPopup(0)">
+      Add New Employee
+    </button>
+  </div>
+  <div class="row" style="margin-top:10px;margin-bottom: 10px;">
+  </div>
+  <div class="table-responsive-md-2">
+    <table class="table table-bordered
                     table-hover
                     table-stripped
                     table-condensed">
-        <thead class="bg-info">
-          <tr>
-            <th>S.NO</th>
-            <th>EMPLOYEE NAME</th>
-            <th>MOBILE NO</th>
-            <th>EMAIL</th>
-            <th>Department</th>
-            <th>Role</th>
-            <th *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Edit</th>
-            <th *ngIf='isShow!'>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let x of employeeResult|paginate:config;">
-            <td>{{x.s_no}}</td>
-            <td>{{x.name}}</td>
-
-            <td>{{x.mobileNumber}}</td>
-            <td>{{x.email}}</td>
-
-            <td>{{x.department}}</td>
-
-
-            <td [ngClass]="{'text-primary':x.role==='TeamManager',
-                             'text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
-            <td *ngIf='isShow'><button class=" glyphicon-pencil" (click)="OpenPopup(x)">Update </button></td>
-            <td *ngIf='isShow'><button class="glyphicon glyphicon-trash" (click)="Delete(x.id)">delete </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
-    </div>
+      <thead class="bg-info">
+        <tr>
+          <th>S.NO</th>
+          <th>EMPLOYEE NAME</th>
+          <th>MOBILE NO</th>
+          <th>EMAIL</th>
+          <th>Department</th>
+          <th>Role</th>
+          <th *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Edit</th>
+          <th *ngIf='isShow!'>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let x of employeeResult|paginate:config;">
+          <td>{{x.s_no}}</td>
+          <td>{{x.name}}</td>
+          <td>{{x.mobileNumber}}</td>
+          <td>{{x.email}}</td>
+          <td>{{x.department}}</td>
+          <td [ngClass]="{'text-primary':x.role==='TeamManager','text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
+          <td *ngIf='isShow'><button class=" glyphicon-pencil" (click)="empOpenPopup(x)">Update </button></td>
+          <td *ngIf='isShow'><button class="glyphicon glyphicon-trash" (click)="Delete(x.id)">delete </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+  </div>
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait. </p>
+  </ngx-spinner>
 </div>
-
 <!-- The Modal -->
-<div class="modal fade" id="department_Modal">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
+<div class="modal fade" id="employeeModal">
+  <div class="modal-dialog modal-xl" data-keyboard="false" data-backdrop="satic">
+    <div class="modal-content modal-xl">
       <!-- Modal Header -->
       <div class="modal-header">
         <h4 id='m_title' class="modal-title"></h4>
-        <button (click)='close()' class="close" data-dismiss="modal">&times;</button>
+        <button (click)='close()' class="close"data-dismiss="modal" >&times;</button>
       </div>
       <!-- Modal body -->
-      <div class="modal-body">
-        <form #employeeData="ngForm">
+      <div class="modal-xl">
+        <form [formGroup]="employeeData" novalidate>
           <div class="row col-sm-12">
             <!--Employee name input box-->
             <div class="col-sm-4 form-group ">
               <label>Employee name</label>
-              <input type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" name="name"
-                #name='ngModel' required>
-              <div *ngIf="name.invalid&&name.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee name is required.
+              <input type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" formControlName="name"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('name').hasError('required')}" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('name').hasError('required')">
+                *Employee name is required.
               </div>
             </div>
             <!--Employee gender-->
             <div class="col-sm-4 form-group ">
               <label>Employee Gender</label>
-              <select id="m_gender" name="gender" required #gender='ngModel' class="form-control"
-                [(ngModel)]="employee.gender">
+              <select id="m_gender" formControlName="gender" class="form-control"
+                [(ngModel)]="employee.gender"[ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('gender').hasError('required')}" >
                 <option value="Male">Male</option>
                 <option value='Female'>Female</option>
                 <option value='Third Gender'>Third Gender</option>
               </select>
-              <div *ngIf="gender.invalid&&gender.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee name is required.
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('gender').hasError('required')" >
+                *Employee name is required.
               </div>
             </div>
             <!--Employee age-->
             <div class="col-sm-4 form-group ">
               <label>Employee Age</label>
-              <input type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" name="age" #age='ngModel'
-                required>
-              <div *ngIf="age.invalid&&age.touched " [ngClass]="'error'" class='alert alert-danger'>
+              <input type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" formControlName="age"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('age').hasError('required')}" >
+              <div style = 'color:red'*ngIf="isFormSubmitted && employeeData.get('age').hasError('required')" >
                 Employee Age is required.
               </div>
             </div>
@@ -98,27 +95,27 @@
             <div class="col-sm-4 form-group ">
               <label>Employee Experiance</label>
               <input type="text" id="m_experiance" class="form-control" [(ngModel)]="employee.experiance"
-                name="experiance" #experiance='ngModel' required>
-              <div *ngIf="experiance.invalid&&experiance.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Experiance is required.
+                formControlName="experiance" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('experiance').hasError('required')}" >
+              <div style= 'color:red'*ngIf="isFormSubmitted && employeeData.get('experiance').hasError('required')" >
+                *Employee Experiance is required.
               </div>
             </div>
             <!--Employee mpbile no-->
             <div class="col-sm-4 form-group ">
               <label>Employee Mobile Number</label>
-              <input type="text" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
-                name="mobileNumber" #mobileNumber='ngModel' required>
-              <div *ngIf="mobileNumber.invalid&&mobileNumber.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Mobile Number is required.
+              <input type="number" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
+                formControlName="mobileNumber" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('mobileNumber').hasError('required')}" >
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('required')" >
+                *Employee Mobile Number is required.
               </div>
             </div>
             <!--Employee email-->
             <div class="col-sm-4 form-group ">
               <label>Employee Email</label>
-              <input type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" name="email"
-                #email='ngModel' required>
-              <div *ngIf="email.invalid&&email.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Email is required.
+              <input type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" formControlName="email"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('email').hasError('required')}" >
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('email').hasError('required')" >
+                *Employee Email is required.
               </div>
             </div>
           </div>
@@ -126,29 +123,28 @@
           <div class="row col-sm-12">
             <div class="col-sm-4 form-group ">
               <label>Employee Password</label>
-              <input type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" name="password"
-                #password='ngModel' required />
-              <div *ngIf="password.invalid&&password.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Password is required.
+              <input type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" formControlName="password"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('password').hasError('required')}" >
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('password').hasError('required')">
+                *Employee Password is required.
               </div>
             </div>
             <!--Employee joiningdate-->
             <div class="col-sm-4 form-group ">
               <label>Employee Joining Date</label>
               <input type="date" id="m_JoiningDate" class="form-control" [(ngModel)]="employee.dateOfJoining"
-                name="dateOfJoining" #dateOfJoining="ngModel" required />
-              <div *ngIf="dateOfJoining.invalid && dateOfJoining.touched " [ngClass]="'error'"
-                class='alert alert-danger'>
+                formControlName="dateOfJoining" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('dateOfJoining').hasError('required')}" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('dateOfJoining').hasError('required') ">
                 Employee dateOfJoining is required.
               </div>
             </div>
             <!--Employee department-->
             <div class="col-sm-4 form-group ">
               <label>Employee Department</label>
-              <select id="m_department" name="department_id" required #department_id='ngModel' class="form-control"
-                [(ngModel)]="employee.department_id">
-                <option value=""  selected="selected" value>--Please choose covid status--</option>
-                <option *ngFor="let x of deportmentRecords" value="{{x.id}}">{{x.name}}</option>
+              <select id="m_department" formControlName="department_id" class="form-control"
+                [(ngModel)]="employee.department_id" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('department_id').hasError('required')}" >
+                <option value="" selected="selected" value>--Please choose covid status--</option>
+                <option *ngFor='let x of deportmentRecords' value={{x.id}}>{{x.name}}</option>
               </select>
             </div>
           </div>
@@ -156,38 +152,38 @@
             <!--Employee address-->
             <div class="col-sm-4 form-group ">
               <label>Employee Address</label>
-              <input type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" name="address"
-                #address='ngModel' required>
-              <div *ngIf="address.invalid&&address.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Address is required.
+              <input type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" formControlName="address"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('address').hasError('required')}" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('address').hasError('required')" >
+                *Employee Address is required.
               </div>
             </div>
             <!--Employee role-->
-            <div class="col-sm-4 form-group ">
+            <div class="col-sm-4 form-group">
               <label>Employee Role</label>
-              <select id="m_role" name="role" required #role='ngModel' class="form-control" [(ngModel)]="employee.role">
+              <select id="m_role" formControlName="role" class="form-control" [(ngModel)]="employee.role"
+              [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('role').hasError('required')}">
                 <option value="" disabled selected="selected" value>--Please choose Employee Role--</option>
                 <option value="TeamManager">Team Manager</option>
                 <option value="TeamMember">Team Member</option>
               </select>
-              <div *ngIf="role.invalid&&role.touched " [ngClass]="'error'" class='alert alert-danger'>
-                Employee Role is required.
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('role').hasError('required') " >
+                *Employee Role is required.
               </div>
             </div>
             <!--Employee Designation input box-->
             <div class="col-sm-4 form-group">
               <label>Employee Designation</label>
               <input type="text" id="m_designation" class="form-control" [(ngModel)]="employee.designation"
-                name="designation" required error #designation='ngModel'>
-              <div *ngIf="designation.invalid&&designation.touched " [ngClass]="'error'" class='alert alert-danger'>
-                designation is required.
+                formControlName="designation" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('designation').hasError('required')}" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('designation').hasError('required')" >
+                *designation is required.
               </div>
             </div>
           </div>
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="submit" id='btn_title' class="btn btn-success" (click)='InsertUpdate()'
-              data-dismiss="modal"></button>
+            <button type="submit" id='btn_title' class="btn btn-success" (click)='empInsertUpdate()'></button>
             <button type="button" id='btn_close_title' (click)='close()' class="btn btn-danger"
               data-dismiss="modal">Close</button>
           </div>

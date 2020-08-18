@@ -24,6 +24,8 @@ export class LeaveManagementComponent implements OnInit {
   public user = new Leave();
   config: any;
   public isFormSubmitted: boolean;
+  public isUpdtColumnShow: boolean = null;
+  public isDisableProfilView:boolean;
   public formData: FormGroup = new FormGroup({
     subject: new FormControl(null, [Validators.required]),
     reason: new FormControl(null, [Validators.required]),
@@ -47,6 +49,7 @@ export class LeaveManagementComponent implements OnInit {
     }
   };
   ngOnInit(): void {
+    this.isUpdtColumnShow = false;
     this.GetEmployeeByRole(this.role);
     jQuery('#btn_title').html('Apply Leave');
     this.GetAllLeaveRecords(this.user);
@@ -71,7 +74,7 @@ export class LeaveManagementComponent implements OnInit {
   department_Array: any[] = [];
   Ids_Array: any[] = [];
   GetAllLeaveRecords(user) {
-    this.SpinnerService.show();
+    //this.SpinnerService.show();
     this.service.GetLeaveRecords(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
@@ -106,7 +109,7 @@ export class LeaveManagementComponent implements OnInit {
           this.empService.GetEmployeeByid(element).subscribe((posRe) => {
             let filterResult = this.leaveResult.filter(ele => ele.reportingPerson_id == element)
             filterResult.forEach(ele => ele.reportingPersonName = posRe[0].name)
-            this.SpinnerService.hide();
+            //this.SpinnerService.hide();
           }, this.ErrorCallBack)
         });
       }
@@ -137,13 +140,32 @@ export class LeaveManagementComponent implements OnInit {
   pipe = new DatePipe('en-US');
   actionItem_array: string[] = [];
   public filterData;
+
+  viewProfilePopup(item){
+    debugger;
+    this.isDisableProfilView = true;
+    this.isUpdtColumnShow = true;
+    if (item) {
+      //debugger;
+      var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
+      item.dateOfleave = date;
+      this.leave = item;
+      //this.isFormSubmitted = true;
+      jQuery('#m_title').html('Update Record');
+      jQuery('#btn_addrecord_title').html('Update');
+      jQuery('#action').prop('disabled', false);
+      jQuery('#leaveMangementModel').modal('show');
+    } 
+
+  }
   OpenPopup(item) {
     if (item) {
+      this.isUpdtColumnShow = false;
       debugger;
       var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
       item.dateOfleave = date;
       this.leave = item;
-      this.isFormSubmitted = true;
+      //this.isFormSubmitted = true;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
       jQuery('#action').prop('disabled', false);
@@ -173,10 +195,11 @@ export class LeaveManagementComponent implements OnInit {
     }
   };
   InsertUpdate() {
+    debugger;
     if (this.leave.id > 0) {
       const id = this.leave.id;
       const data = { 'leave': this.leave };
-      if (this.formData.valid) {
+    
         this.isFormSubmitted = true;
         this.SpinnerService.show();
         this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
@@ -188,9 +211,7 @@ export class LeaveManagementComponent implements OnInit {
             this.SpinnerService.hide();
           };
         }, this.ErrorCallBack)
-      } else {
-        alert('fill popup fields')
-      };
+      
     } else {
       this.leave.userid = this.user.id
       const data = { 'leave': this.leave };
@@ -236,6 +257,7 @@ export class LeaveManagementComponent implements OnInit {
     })
   };
   close() {
+    this.isDisableProfilView = false;
     this.isFormSubmitted = null;
     this.leave = new Leave();
   };

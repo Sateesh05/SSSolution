@@ -1,12 +1,15 @@
 <!--Header Design-->
-<div class="jumbotron text-center">
-  <table width='100%;'vertical-align='-webkit-baseline-middle;'>
-    <td style ='text-align:right;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="rounded-circle" id="logo" alt="sslogo" width="35px" height="35px"></td>
-    <td width='240px'><h1>SS Solutions</h1></td>
-    <td  style ='text-align:left;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="" alt="admin" width="35px" height="35px"></td>
-   <span class=admin_title></span>
-  </table>
-</div>
+
+  <div class="jumbotron text-center">
+    <table width='100%;'vertical-align='-webkit-baseline-middle;'>
+      <td style ='text-align:right;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="rounded-circle" id="logo" alt="sslogo" width="35px" height="35px"></td>
+      <td width='240px'><h1>SS Solutions</h1></td>
+      <td  style ='text-align:left;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="" alt="admin" width="35px" height="35px"></td>
+    <span class=admin_title></span>
+    </table>
+  </div>
+
+<div style= 'width:100%'>
 <table width="100%" class='bg-primary'>
   <td width="80%">
       <!--Navbar-->
@@ -38,12 +41,12 @@
   </td>
   <td width="20%">
     <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-     <a class="nav-link " style='text-align:right;color:white;overflow:hidden;margin:0px 0px 0px 180px'
-      [routerLink]="['']">LogOut</a>
+     <a class="nav-link " style='text-align:right;color:white;cursor: pointer;overflow:hidden;margin:0px 0px 0px 180px'
+      (click)='logout()'>LogOut</a>
     </nav>
   </td>
 </table>
-
+</div>
 <div>
   <br>
   <router-outlet></router-outlet>

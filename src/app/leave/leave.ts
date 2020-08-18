@@ -6,7 +6,7 @@ export class Leave{
     subject:string;
     reason:string;
     action:string;
-    reportingPerson_id:number;
+    reportingPerson_id:any;
     reportingPersonName:string;
     name:string;
     department:string;

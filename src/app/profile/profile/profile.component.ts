@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
     };
   }
   GetEmployeeById(Id: number) {
-    this.SpinnerService.show();
+    //this.SpinnerService.show();
     this.service.GetEmployeeByid(Id).subscribe((posRes) => {
       this.employee = posRes;
       console.log(this.employee);
@@ -40,10 +40,6 @@ export class ProfileComponent implements OnInit {
         this.departementService.getByIdDepartmentRecord(elem.department_id).subscribe((poRe) => {
           console.log(poRe);
           this.employee[0].department = poRe[0].name;
-          setTimeout(()=>{
-            this.SpinnerService.hide();
-          },300)
-
         }, this.ErrorHandling)
       });
     }, this.ErrorHandling)

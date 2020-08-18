@@ -2,3 +2,16 @@
 {
   border-color:red;
 }
+.modal-title{
+  margin: 0px;
+  color:white;
+  margin-left: 8px !important;
+};
+.modal-header{
+  background-color: rgb(27, 160, 27) !important;
+    padding: 8px !important;
+    margin-bottom: 12px !important;
+};
+.btn btn-success{
+  background-color: aqua !important;
+}

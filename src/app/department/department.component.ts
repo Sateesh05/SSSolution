@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { departmentService } from './department.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { department } from './department';
@@ -6,7 +6,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgxSpinnerService } from "ngx-spinner";
 import { NotificationService } from '../toastr/toastr.service';
 import Swal from 'sweetalert2';
-
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 declare var jQuery: any;
 @Component({
   selector: 'department1',
@@ -23,11 +25,17 @@ export class DepartmentComponent implements OnInit {
   //pagination configaration set up obj variable declaration
   config: any;
   public isFormSubmitted: boolean = null;
-
+  public dataSource = new MatTableDataSource<department>();
+  @ViewChild(MatSort,{static:true}) 
+  public sort:MatSort;
+  @ViewChild(MatPaginator,{static:true}) 
+  public paginator: MatPaginator;
   public dptData: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.required]),
-    description: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [Validators.required,Validators.maxLength(20)]),
+    description: new FormControl(null, [Validators.required,Validators.maxLength(100)]),
   });
+
+  displayedColumns: string[] = ['s_no', 'name', 'description','update', 'delete'];
   constructor(public service: departmentService,
     private notifyService: NotificationService,
     private SpinnerService: NgxSpinnerService) {
@@ -40,11 +48,15 @@ export class DepartmentComponent implements OnInit {
     // calling get all departmentrecords method
     this.getDepartmentRecords();
     this.isFormSubmitted = false;
-    this.config = {
-      itemsPerPage: 5,
-      currentPage: 1,
-      totalItems: this.deportmentRecords.length
-    };
+    // this.config = {
+    //   itemsPerPage: 5,
+    //   currentPage: 1,
+    //   totalItems: this.deportmentRecords.length
+    // };
+  };
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   };
   showCreateToaster() {
     this.notifyService.showSuccess("Record Added Successfully !!", "Department Records")
@@ -67,13 +79,14 @@ export class DepartmentComponent implements OnInit {
 
   // Department Get Records
   getDepartmentRecords() {
-    this.SpinnerService.show();
+    //this.SpinnerService.show();
     this.service.getAllDepartmentRecords().subscribe((posRes) => {
       if (posRes) {
         this.deportmentRecords = posRes;
+        this.dataSource.data = posRes as department[];
         this.deportmentRecords.map((element, index) => {
           element.s_no = index + 1;
-          this.SpinnerService.hide();
+          //this.SpinnerService.hide();
         });
         //console.log(this.deportmentRecords)
       };
@@ -115,6 +128,7 @@ export class DepartmentComponent implements OnInit {
           if (posRes.update === "success") {
             this.department = new department();
             this.getDepartmentRecords();
+            this.isFormSubmitted = null;
             this.SpinnerService.hide();
             this.showUpdateToaster();
             jQuery("#departmentModel").modal("hide");
@@ -175,9 +189,9 @@ export class DepartmentComponent implements OnInit {
     this.department = new department();
     this.isFormSubmitted = null;
   };
-  pageChanged(event) {
-    this.config.currentPage = event;
-  }
+  // pageChanged(event) {
+  //   this.dataSource.currentPage = event;
+  // }
 };
 
 

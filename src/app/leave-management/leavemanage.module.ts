@@ -9,10 +9,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { NgxSpinnerModule } from "ngx-spinner";
-
+import { MatIconModule } from '@angular/material/icon';
 @NgModule({
     declarations: [LeaveManagementComponent],
-  imports: [ReactiveFormsModule,NgxSpinnerModule,NgxPaginationModule, CommonModule, HttpClientModule,FormsModule,RouterModule.forChild([
+  imports: [ReactiveFormsModule,MatIconModule,NgxSpinnerModule,NgxPaginationModule, CommonModule, HttpClientModule,FormsModule,RouterModule.forChild([
         {path:'',component:LeaveManagementComponent}
     ])],
     providers: [employeeService,departmentService,LeaveService],

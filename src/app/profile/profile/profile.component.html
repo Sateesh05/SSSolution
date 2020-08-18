@@ -33,7 +33,7 @@
             <div class="col-md-10 grid-margin stretch-card">
                 <div class="card" *ngFor="let user of employee">
                     <div class="card-body">
-                        <p class="card-title font-weight-bold" style="font-size:20px">About</p>
+                        <p class="card-title font-weight-bold" style="font-size:20px">Profile</p>
                         <hr>
                         <p class="card-description">User Information</p>
                         <ul class="about">
@@ -46,13 +46,13 @@
                             <li class="about-items"><i class="mdi mdi-lock-outline icon-sm "></i>
                                 <span class="about-item-name">Password:</span><span class="about-item-detail"
                                     type='password'>{{user.password}}</span> </li>
-                            <li class="about-items"><i class="mdi mdi-format-align-left icon-sm "></i>
+                            <!--  <li class="about-items"><i class="mdi mdi-format-align-left icon-sm "></i>
                                 <span class="about-item-name">Bio:</span>
                                 <span class="about-item-detail">Lorem ipsum dolor
                                     sit amet, consectetur adipisicing elit. Architecto totam, nemo quidem delectus
                                     dolores vero porro inventore perferendis minus perspiciatis.</span> </li>
                             <li class="about-items"><i class="mdi mdi-trophy-variant-outline icon-sm "></i>
-                                <span class="about-item-name">Badges:</span><span class="about-item-detail">
+                                <span class="about-item-name">Badges:</span><span class="about-item-detail"> 
                                     <button type="button" class="btn btn-success btn-rounded btn-icon">
                                         <i class="mdi mdi-star text-white"></i>
                                     </button>
@@ -63,7 +63,7 @@
                                         <i class="mdi mdi-check text-white"></i>
                                     </button>
                                 </span>
-                            </li>
+                            </li> -->
                         </ul>
                         <p class="card-description">Contact Information</p>
                         <ul class="about">
@@ -83,7 +83,7 @@
                         </ul>
                         <p class="card-description">Basic Information</p>
                         <ul class="about">
-                            <li class="about-items"><i class="mdi mdi-cake icon-sm "></i>
+                            <li class="about-items"><i class="mdi mdi-cake icon-xl "></i>
                                 <span class="about-item-name">Date Of Joining:</span><span
                                     class="about-item-detail">{{user.dateOfJoining|date:'short'}}</span></li>
                             <li class="about-items"><i class="mdi mdi-account icon-sm "></i>
@@ -104,7 +104,7 @@
             </div>
         </div>
         <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
-          <p style="color: white">Please Wait. </p>
+          <p style="color: rgb(173, 89, 89)">Please Wait. </p>
         </ngx-spinner>
     </div>
 

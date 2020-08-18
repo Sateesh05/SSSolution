@@ -30,5 +30,11 @@ public isShowLeave:boolean;
   };
   ngOnInit(): void {
   }
+  logout(){
+   let ans= confirm('are you sure to logout')
+   if(ans){
+    this.router.navigate(['']);
+   }
+  }
 
 };

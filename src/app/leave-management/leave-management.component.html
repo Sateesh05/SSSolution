@@ -4,7 +4,7 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <span style='font-size: 23px;color: blueviolet;margin-left: 30px;' id='leave_dept_title'></span>
+        <span style='font-size: 23px;color: blueviolet;' id='leave_dept_title'></span>
         <!-- <button id="btn_title" class="btn btn-success glyphicon glyphicon-plus
            glyph bt-sm float-right" (click)="OpenPopup(0)">
             </button> -->
@@ -15,17 +15,16 @@
                       table-hover
                       table-stripped
                       table-condensed">
-        <thead class="bg-info">
+        <thead class="bg-success" style='color:white;'>
           <tr>
-            <th>S.NO</th>
-            <th>Name</th>
-            <th>SUBJECT</th>
-            <th>REASON</th>
-            <th>REPORTING PERSON</th>
-            <th>DATE OF LEAVE</th>
-            <th>STATUS</th>
-            <th *ngIf='isShow'>Edit</th>
-            <th>Delete</th>
+            <th style='font-weight: 400;'>S.NO</th>
+            <th style='font-weight: 400;'>Name</th>
+            <th style='font-weight: 400;'>SUBJECT</th>
+            <th style='font-weight: 400;'>REASON</th>
+            <th style='font-weight: 400;'>REPORTING PERSON</th>
+            <th style='font-weight: 400;'>DATE OF LEAVE</th>
+            <th style='font-weight: 400;'>STATUS</th>
+            <th style='font-weight: 400;' *ngIf='isShow'>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -34,12 +33,17 @@
             <td>{{x.name}}</td>
             <td>{{x.subject}}</td>
             <td>{{x.reason}}</td>
-            <td>{{x.reportingPersonName}}</td>
+            <td >{{x.reportingPersonName}}</td>
             <td>{{x.dateOfleave|date:'mediumDate'}}</td>
             <td>{{x.action}}</td>
-            <td *ngIf='isShow'><button class="glyphicon glyphicon-pencil" (click)="OpenPopup(x)">Edit</button>
+            <td *ngIf='isShow'>
+              <button  style='outline: none;border: none;' class= 'mat-icon-button' (click)="viewProfilePopup(x)">
+                <mat-icon  color="primary" class="mat-18">remove_red_eye</mat-icon>
+              </button>
+              <button style='outline: none;border: none;' class= 'mat-icon-button' (click)="OpenPopup(x)">
+               <mat-icon  color="accent" class="mat-18">edit</mat-icon>
+              </button>
             </td>
-            <td><button class="glyphicon glyphicon-trash" (click)="delete(x.id)">delete </button></td>
           </tr>
         </tbody>
       </table>
@@ -51,11 +55,13 @@
   </div>
 </div>
 <div class="modal fade" id="leaveMangementModel">
-  <div class="modal-dialog modal-md" data-keyboard="false" data-backdrop="satic">
+  <div class="modal-dialog  modal-dialog-centered modal-md" data-keyboard="false" data-backdrop="satic">
     <div class="modal-content modal-xl">
-      <div class="modal-header">
+      <div class="modal-header" style="background-color: forestgreen;
+      padding: 6px;
+      margin-bottom: 8px;">
         <h2 id="m_title" class="modal-title"></h2>
-        <button (click)='close()' class="close ,pull-right" data-dismiss="modal">
+        <button (click)='close()' class="close ,pull-right" data-dismiss="modal"style = "color: white;outline: none;">
           &times;
         </button>
       </div>
@@ -63,10 +69,10 @@
         <!--popup form-->
         <form [formGroup]="formData" class="form-horizontal">
           <!--Leave Subject input box   -->
-          <div class=" form-group">
+          <div class=" form-group" *ngIf = 'isUpdtColumnShow'>
             <label class="control-label col-sm-2"> Subject:</label>
             <div class="col-sm-10">
-              <input type="text" id="m_description" class="form-control" [(ngModel)]="leave.subject"
+              <input [disabled]='isDisableProfilView' type="text" id="m_description" class="form-control" [(ngModel)]="leave.subject"
                 formControlName="subject"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['subject'].hasError('required')}">
             </div>
@@ -75,10 +81,10 @@
             </div>
           </div>
           <!--Leave Reason input box-->
-          <div class="form-group">
+          <div class="form-group" *ngIf = 'isUpdtColumnShow'>
             <label class="control-label col-sm-2">Reason:</label>
             <div class="col-sm-10">
-              <textarea rows="5" id="m_description" class="form-control" [(ngModel)]="leave.reason"
+              <textarea [disabled]='isDisableProfilView' rows="5" id="m_description" class="form-control" [(ngModel)]="leave.reason"
                 formControlName="reason"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reason'].hasError('required')}"></textarea>
             </div>
@@ -87,10 +93,10 @@
             </div>
           </div>
           <!--Leave Reporting Person Input Box-->
-          <div class="form-group ">
+          <div class="form-group " *ngIf = 'isUpdtColumnShow'>
             <label class="control-label col-sm-2">ReportingPerson:</label>
             <div class="col-sm-6">
-              <select id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control"[(ngModel)]="leave.reportingPerson_id"
+              <select [disabled]='isDisableProfilView' id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control"[(ngModel)]="leave.reportingPerson_id"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')}">
                 <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>
               </select>
@@ -100,10 +106,10 @@
               </div>
           </div>
           <!--Date Of Leave-->
-          <div class="form-group ">
+          <div class="form-group " *ngIf = 'isUpdtColumnShow'>
             <label class="control-label col-sm-4">Date of Leave</label>
             <div class="col-sm-6">
-              <input type="date" id="m_DateOfleave" class="form-control" [(ngModel)]="leave.dateOfleave"
+              <input [disabled]='isDisableProfilView' type="date" id="m_DateOfleave" class="form-control" [(ngModel)]="leave.dateOfleave"
                 formControlName="dateOfleave"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['dateOfleave'].hasError('required')}">
             </div>
@@ -115,7 +121,7 @@
           <div class="form-group">
             <label class="control-label col-sm-2">Action</label>
             <div class="col-sm-4">
-              <select id="action" formControlName="action" class="form-control" [(ngModel)]="leave.action" [disabled]=''
+              <select [disabled]='' id="action" formControlName="action" class="form-control" [(ngModel)]="leave.action" 
                 [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['action'].hasError('required')}">
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>

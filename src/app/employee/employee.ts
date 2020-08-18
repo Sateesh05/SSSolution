@@ -11,7 +11,7 @@ export class employee {
     address:string;
     designation:string;
     department:string;
-    department_id:number;
+    department_id:any;
     dateOfJoining:Date;
     role:string;
   filter: any;

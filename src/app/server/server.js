@@ -12,7 +12,7 @@ let connection = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: 'Hyderabad8',
+    password: 'root123',
     database: 'ssdb',
     port: 3306
   }

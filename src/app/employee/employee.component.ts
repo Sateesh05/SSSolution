@@ -23,16 +23,18 @@ export class EmployeeComponent implements OnInit {
   public userId: number;
   public userRole: string;
   public isShow: boolean;
+  public isShowButton:boolean = null;
   public config: any;
   public isFormSubmitted: boolean = null;
   public employeeData: FormGroup = new FormGroup({
-    name: new FormControl(null, [Validators.required]),
+    name: new FormControl(null, [Validators.required,Validators.pattern("^[a-zA-Z ]*$"),
+                            Validators.maxLength(20)]),
     gender: new FormControl(null, [Validators.required]),
-    age: new FormControl(null, [Validators.required]),
+    age: new FormControl(null, [Validators.required,Validators.pattern("^(?:1[8-9]|[2-5][0-9]|60)[a-zA-Z ]*$")]),
     experiance: new FormControl(null, [Validators.required]),
-    mobileNumber: new FormControl(null, [Validators.required]),
-    email: new FormControl(null, [Validators.required]),
-    password: new FormControl(null, [Validators.required]),
+    mobileNumber: new FormControl(null, [Validators.required,Validators.pattern("^((\\+91-?)|0)?[0-9]{10}$")]),
+    email: new FormControl(null, [Validators.required,Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")]),
+    password: new FormControl(null, [Validators.required,Validators.minLength(6)]),
     dateOfJoining: new FormControl(null, [Validators.required]),
     department_id: new FormControl(null, [Validators.required]),
     address: new FormControl(null, [Validators.required]),
@@ -61,6 +63,7 @@ export class EmployeeComponent implements OnInit {
     }, this.ErrorCallBack);
   };
   ngOnInit(): void {
+    this.isShowButton = true;
     this.GetAllEmployee(this.user.department_id);
     this.isFormSubmitted = false;
     this.getDepartmentRecords();
@@ -91,7 +94,7 @@ export class EmployeeComponent implements OnInit {
   }
   //Get All EmployeeRecords
   GetAllEmployee(userId) {
-    this.SpinnerService.show();
+    //this.SpinnerService.show();
     this.service.GetEmployeeList(userId).subscribe((posRes) => {
       //debugger;
       if (posRes) {
@@ -116,7 +119,7 @@ export class EmployeeComponent implements OnInit {
             let filterResult = this.employeeResult.filter(item => item.department_id == element);
             filterResult.forEach(element => {
               element.department = response[0].name;
-              this.SpinnerService.hide();
+              //this.SpinnerService.hide();
             });
           }, (err: HttpErrorResponse) => { console.log(err); });
         });
@@ -132,19 +135,37 @@ export class EmployeeComponent implements OnInit {
       this.showErrormessage();
     };
   };
+  viewProfilePopup(item){
+    this.isShowButton = false;
+    //debugger
+    var date = this.pipe.transform (new Date(item.dateOfJoining),'yyyy-MM-dd')
+      item.dateOfJoining = date;
+    this.employee = item
+    jQuery('#m_title').html('employee details');
+    jQuery('input,select').prop('disabled',true);
+    jQuery("#employeeModal").modal("show");
+  }
   //Open Popup Method
   empOpenPopup(item) {
+    this.isShowButton = true;
     if (item) {
       var date = this.pipe.transform (new Date(item.dateOfJoining),'yyyy-MM-dd')
       item.dateOfJoining = date;
       this.employee = item;
+      jQuery('input,select').prop('disabled',false);
       jQuery('#m_title').html('Update Employee');
       jQuery('#btn_title').html('Update');
     } else {
+      debugger
+      jQuery('input,select').prop('disabled',false);
       jQuery('#m_title').html('Add New Employee');
+      this.employee.role = '';
+      this.employee.gender = '';
+      this.employee.department_id = '';
       jQuery('#btn_title').html('insert');
     }
     jQuery("#employeeModal").modal("show");
+    //this.isShowButton = false;
   };
   //Insert and Update Method
   empInsertUpdate() {
@@ -165,9 +186,7 @@ export class EmployeeComponent implements OnInit {
             jQuery("#employeeModal").modal("hide");
           };
         }, this.ErrorCallBack)
-      } else {
-        this.showWarningMessage();
-      }
+      } ;
     } else {
       this.isFormSubmitted = true;
       if (this.employeeData.valid) {
@@ -182,8 +201,6 @@ export class EmployeeComponent implements OnInit {
             jQuery("#employeeModal").modal("hide");
           };
         }, this.ErrorCallBack);
-     } else {
-        this.showWarningMessage();
      }
     };
   };
@@ -207,7 +224,7 @@ export class EmployeeComponent implements OnInit {
           };
         }, this.ErrorCallBack)
       } else if (result.isDismissed) {
-        this.showWarningMessage();
+        //this.showWarningMessage();
       }
     })
   };
@@ -223,6 +240,7 @@ export class EmployeeComponent implements OnInit {
   close() {
     this.isFormSubmitted = null;
     this.employee = new employee();
+    this.isShowButton = true;
   };
   pageChanged(event) {
     this.config.currentPage = event;

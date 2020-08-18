@@ -1,6 +1,6 @@
   <div class="container">
-      <div class="col-sm-12">
-        <span style='font-size: 23px;color: blueviolet;margin-left: 30px;' id='leavedept_title'></span>
+      <div class="col-sm-12" style="padding: 0;">
+        <span style='font-size: 23px;color: blueviolet;' id='leavedept_title'></span>
         <button id="leavebtn_title" class="btn btn-success glyphicon glyphicon-plus
            glyph bt-sm float-right" (click)="OpenPopup(0)">
         </button>
@@ -12,16 +12,16 @@
                       table-hover
                       table-stripped
                       table-condensed">
-        <thead class="bg-info">
+        <thead class="bg-success" style='color: white;background-color:  forestgreen;'>
           <tr>
-            <th>S.NO</th>
-            <th>Name</th>
-            <th>SUBJECT</th>
-            <th>REASON</th>
-            <th>REPORTING PERSON</th>
-            <th>DATE OF LEAVE</th>
-            <th>STATUS</th>
-            <th>Delete</th>
+            <th style="font-weight: 400;">S.NO</th>
+            <th style="font-weight: 400;">Name</th>
+            <th style="font-weight: 400;">SUBJECT</th>
+            <th style="font-weight: 400;">REASON</th>
+            <th style="font-weight: 400;">REPORTING PERSON</th>
+            <th style="font-weight: 400;">DATE OF LEAVE</th>
+            <th style="font-weight: 400;">STATUS</th>
+            <th style="font-weight: 400;">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -33,10 +33,14 @@
             <td>{{x.reportingPersonName}}</td>
             <td>{{x.dateOfleave| date :'mediumDate'}}</td>
             <td>{{x.action}}</td>
-
-            <td *ngIf='false'><button class="glyphicon glyphicon-pencil" (click)="OpenPopup(x)">Edite </button>
+            <td>
+              <button *ngIf='false'  style='outline: none;border: none;' class= 'mat-icon-button' (click)="OpenPopup(x)">
+               <mat-icon  color="accent" class="mat-18">edit</mat-icon>
+             </button>
+             <button  (click)="delete(x.id)" style='outline: none;border: none;' class= 'mat-icon-button'>
+               <mat-icon color="warn" class="mat-18">delete</mat-icon> 
+              </button>
             </td>
-            <td><button class="glyphicon glyphicon-trash" (click)="delete(x.id)">delete </button></td>
           </tr>
         </tbody>
       </table>
@@ -48,11 +52,12 @@
   </div>
 
 <div class="modal fade" id="leaveModal">
-  <div class="modal-dialog modal-md" data-keyboard="false" data-backdrop="satic">
+  <div class="modal-dialog  modal-dialog-centered modal-md" data-keyboard="false" data-backdrop="satic">
     <div class="modal-content modal-xl">
-      <div class="modal-header">
-        <h2 id="m_title" class="modal-title"></h2>
-        <button (click)='close()' class="close ,pull-right" data-dismiss="modal">
+      <div class="modal-header bg-success" style='padding: 6px;margin-bottom: 8px;'>
+        <h2 id="m_title" class="modal-title" style="margin: 0px;
+        color: white;"></h2>
+        <button (click)='close()' class="close ,pull-right" data-dismiss="modal" style = "color: white;outline: none;font-weight: 400;">
           &times;
         </button>
       </div>
@@ -98,7 +103,8 @@
             <div class="col-sm-6">
               <select id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control" [(ngModel)]="leave.reportingPerson_id"
               [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')}">
-                <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>
+              <option value='' disabled>choose ReportingPerson</option>  
+              <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>
               </select>
             </div>
             <div style='color:red' *ngIf="isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')  ">

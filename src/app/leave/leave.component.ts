@@ -90,10 +90,13 @@ export class LeaveComponent implements OnInit {
   department_Array: any[] = [];
   Ids_Array: any[] = [];
   GetAllLeaveRecords(user) {
-    this.SpinnerService.show();
     this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
       if (posRes) {
         this.leaveResult = posRes;
+        debugger
+        if(posRes.length>0){
+          this.SpinnerService.show();
+        }
         // debugger;
         console.log(this.leaveResult);
         this.service.getLeaveRecordByUserId(user).subscribe((posRes) => {
@@ -180,6 +183,7 @@ export class LeaveComponent implements OnInit {
         this.leave.name = this.user.name;
         this.leave.userid = this.user.userid;
         this.leave.action = 'Pending'
+        this.leave.reportingPerson_id =''
         jQuery('#action').prop('disabled', true);
         jQuery('#m_title').html('Leave Request');
         jQuery('#btn_addrecord_title').html('Apply');
@@ -229,7 +233,7 @@ export class LeaveComponent implements OnInit {
       this.isFormSubmitted = null;
       this.leave = new Leave();
       jQuery('#leaveModal').modal('hide');
-    } else this.showLeavePopupWarning();
+    };
   };
   //delete Method
   delete(id) {

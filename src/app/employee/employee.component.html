@@ -1,6 +1,6 @@
 <div class="container">
-  <div class="col-sm-12">
-    <span style="color:rgb(206, 170, 9);font-size:27px;margin-left: 100px;" id=dept_title></span>
+  <div class="col-sm-12" style="padding: 0;">
+    <span style="color:rgb(206, 170, 9);font-size:27px;" id=dept_title></span>
     <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
       (click)="empOpenPopup(0)">
       Add New Employee
@@ -8,21 +8,22 @@
   </div>
   <div class="row" style="margin-top:10px;margin-bottom: 10px;">
   </div>
+  <div class="mat-elevation-z8">
   <div class="table-responsive-md-2">
     <table class="table table-bordered
                     table-hover
                     table-stripped
                     table-condensed">
-      <thead class="bg-info">
+      <thead style="background-color: rgb(22, 155, 22);color: white;">
         <tr>
-          <th>S.NO</th>
-          <th>EMPLOYEE NAME</th>
-          <th>MOBILE NO</th>
-          <th>EMAIL</th>
-          <th>Department</th>
-          <th>Role</th>
-          <th *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Edit</th>
-          <th *ngIf='isShow!'>Delete</th>
+          <th style="font-weight: 400;">S.NO</th>
+          <th style="font-weight: 400;">EMPLOYEE NAME</th>
+          <th style="font-weight: 400;">MOBILE NO</th>
+          <th style="font-weight: 400;">EMAIL</th>
+          <th style="font-weight: 400;">Department</th>
+          <th style="font-weight: 400;">Role</th>
+          <th style="font-weight: 400;" *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Action(s)</th>
+          
         </tr>
       </thead>
       <tbody>
@@ -33,26 +34,36 @@
           <td>{{x.email}}</td>
           <td>{{x.department}}</td>
           <td [ngClass]="{'text-primary':x.role==='TeamManager','text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
-          <td *ngIf='isShow'><button class=" glyphicon-pencil" (click)="empOpenPopup(x)">Update </button></td>
-          <td *ngIf='isShow'><button class="glyphicon glyphicon-trash" (click)="Delete(x.id)">delete </button>
-          </td>
+          <td *ngIf='isShow'>
+            <button  style='outline: none;border: none;' class= 'mat-icon-button' (click)="viewProfilePopup(x)">
+              <mat-icon  color="primary" class="mat-18">remove_red_eye</mat-icon>
+            </button>
+            <button  style='outline: none;border: none;' class= 'mat-icon-button' (click)="empOpenPopup(x)">
+             <mat-icon  color="accent" class="mat-18">edit</mat-icon>
+            </button>
+            <button  (click)="Delete(x.id)" style='outline: none;border: none;' class= 'mat-icon-button'>
+              <mat-icon color="warn" class="mat-18">delete</mat-icon> </button>
+            </td>
         </tr>
       </tbody>
     </table>
     <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
   </div>
+</div>
   <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
     <p style="color: white">Please Wait. </p>
   </ngx-spinner>
 </div>
 <!-- The Modal -->
 <div class="modal fade" id="employeeModal">
-  <div class="modal-dialog modal-xl" data-keyboard="false" data-backdrop="satic">
+  <div class="modal-dialog  modal-dialog-centered modal-xl" data-keyboard="false" data-backdrop="satic">
     <div class="modal-content modal-xl">
       <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 id='m_title' class="modal-title"></h4>
-        <button (click)='close()' class="close"data-dismiss="modal" >&times;</button>
+      <div class="modal-header" style="background-color: forestgreen;
+      padding: 6px;
+      margin-bottom: 8px;" >
+        <h2 id='m_title' class="modal-title"></h2>
+        <button (click)='close()' class="close"data-dismiss="modal" style = "color: white;outline: none;">&times;</button>
       </div>
       <!-- Modal body -->
       <div class="modal-xl">
@@ -61,17 +72,24 @@
             <!--Employee name input box-->
             <div class="col-sm-4 form-group ">
               <label>Employee name</label>
-              <input type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" formControlName="name"
+              <input [disabled]='' type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" formControlName="name"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('name').hasError('required')}" >
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('name').hasError('required')">
                 *Employee name is required.
+              </div>
+              <div style='color:red' *ngIf=" employeeData.controls['name'].hasError('pattern')">
+                *enter the valid name.
+              </div>
+              <div style='color:red' *ngIf="employeeData.controls['name'].touched && employeeData.controls['name'].hasError('maxlength')">
+                *name valid with in 20 charecters.
               </div>
             </div>
             <!--Employee gender-->
             <div class="col-sm-4 form-group ">
               <label>Employee Gender</label>
-              <select id="m_gender" formControlName="gender" class="form-control"
+              <select [disabled]='' id="m_gender" formControlName="gender" class="form-control"
                 [(ngModel)]="employee.gender"[ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('gender').hasError('required')}" >
+                <option value="" disabled>--Please choose employee gender--</option>
                 <option value="Male">Male</option>
                 <option value='Female'>Female</option>
                 <option value='Third Gender'>Third Gender</option>
@@ -83,10 +101,13 @@
             <!--Employee age-->
             <div class="col-sm-4 form-group ">
               <label>Employee Age</label>
-              <input type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" formControlName="age"
+              <input [disabled]='' type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" formControlName="age"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('age').hasError('required')}" >
               <div style = 'color:red'*ngIf="isFormSubmitted && employeeData.get('age').hasError('required')" >
                 Employee Age is required.
+              </div>
+              <div style = 'color:red'*ngIf="isFormSubmitted && employeeData.get('age').hasError('pattern')" >
+                Employee Age is valid at 18-60.
               </div>
             </div>
           </div>
@@ -94,7 +115,7 @@
             <!--Employee Experiance-->
             <div class="col-sm-4 form-group ">
               <label>Employee Experiance</label>
-              <input type="text" id="m_experiance" class="form-control" [(ngModel)]="employee.experiance"
+              <input [disabled]='' type="text" id="m_experiance" class="form-control" [(ngModel)]="employee.experiance"
                 formControlName="experiance" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('experiance').hasError('required')}" >
               <div style= 'color:red'*ngIf="isFormSubmitted && employeeData.get('experiance').hasError('required')" >
                 *Employee Experiance is required.
@@ -103,19 +124,25 @@
             <!--Employee mpbile no-->
             <div class="col-sm-4 form-group ">
               <label>Employee Mobile Number</label>
-              <input type="number" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
+              <input [disabled]='' type="number" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
                 formControlName="mobileNumber" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('mobileNumber').hasError('required')}" >
               <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('required')" >
                 *Employee Mobile Number is required.
+              </div>
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('pattern')" >
+                *Enter the valid Mobile Number.
               </div>
             </div>
             <!--Employee email-->
             <div class="col-sm-4 form-group ">
               <label>Employee Email</label>
-              <input type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" formControlName="email"
+              <input [disabled]='' type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" formControlName="email"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('email').hasError('required')}" >
               <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('email').hasError('required')" >
                 *Employee Email is required.
+              </div>
+              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('email').hasError('pattern')" >
+                *Enter the valid Email.
               </div>
             </div>
           </div>
@@ -123,16 +150,19 @@
           <div class="row col-sm-12">
             <div class="col-sm-4 form-group ">
               <label>Employee Password</label>
-              <input type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" formControlName="password"
+              <input [disabled]='' type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" formControlName="password"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('password').hasError('required')}" >
               <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('password').hasError('required')">
                 *Employee Password is required.
+              </div>
+              <div style='color:red'*ngIf="employeeData.get('password').hasError('minlength')">
+                *Employee Password minimumlength is 6 charectors.
               </div>
             </div>
             <!--Employee joiningdate-->
             <div class="col-sm-4 form-group ">
               <label>Employee Joining Date</label>
-              <input type="date" id="m_JoiningDate" class="form-control" [(ngModel)]="employee.dateOfJoining"
+              <input [disabled]='' type="date" id="m_JoiningDate" class="form-control" [(ngModel)]="employee.dateOfJoining"
                 formControlName="dateOfJoining" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('dateOfJoining').hasError('required')}" >
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('dateOfJoining').hasError('required') ">
                 Employee dateOfJoining is required.
@@ -141,9 +171,9 @@
             <!--Employee department-->
             <div class="col-sm-4 form-group ">
               <label>Employee Department</label>
-              <select id="m_department" formControlName="department_id" class="form-control"
+              <select [disabled]='' id="m_department" formControlName="department_id" class="form-control"
                 [(ngModel)]="employee.department_id" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('department_id').hasError('required')}" >
-                <option value="" selected="selected" value>--Please choose covid status--</option>
+                <option value="" selected="selected" value>--Please choose employee department--</option>
                 <option *ngFor='let x of deportmentRecords' value={{x.id}}>{{x.name}}</option>
               </select>
             </div>
@@ -152,7 +182,7 @@
             <!--Employee address-->
             <div class="col-sm-4 form-group ">
               <label>Employee Address</label>
-              <input type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" formControlName="address"
+              <input [disabled]='' type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" formControlName="address"
                 [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('address').hasError('required')}" >
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('address').hasError('required')" >
                 *Employee Address is required.
@@ -161,9 +191,9 @@
             <!--Employee role-->
             <div class="col-sm-4 form-group">
               <label>Employee Role</label>
-              <select id="m_role" formControlName="role" class="form-control" [(ngModel)]="employee.role"
+              <select [disabled]='' id="m_role" formControlName="role" class="form-control" [(ngModel)]="employee.role"
               [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('role').hasError('required')}">
-                <option value="" disabled selected="selected" value>--Please choose Employee Role--</option>
+                <option value="" disabled>--Please choose Employee Role--</option>
                 <option value="TeamManager">Team Manager</option>
                 <option value="TeamMember">Team Member</option>
               </select>
@@ -174,7 +204,7 @@
             <!--Employee Designation input box-->
             <div class="col-sm-4 form-group">
               <label>Employee Designation</label>
-              <input type="text" id="m_designation" class="form-control" [(ngModel)]="employee.designation"
+              <input [disabled]='' type="text" id="m_designation" class="form-control" [(ngModel)]="employee.designation"
                 formControlName="designation" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('designation').hasError('required')}" >
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('designation').hasError('required')" >
                 *designation is required.
@@ -183,7 +213,7 @@
           </div>
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="submit" id='btn_title' class="btn btn-success" (click)='empInsertUpdate()'></button>
+            <button *ngIf='isShowButton' type="submit" id='btn_title' class="btn btn-success" (click)='empInsertUpdate()'></button>
             <button type="button" id='btn_close_title' (click)='close()' class="btn btn-danger"
               data-dismiss="modal">Close</button>
           </div>

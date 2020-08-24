@@ -9,6 +9,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NotificationService } from '../toastr/toastr.service';
 import Swal from 'sweetalert2';
 declare var jQuery: any;
+
+class ImageSnippet {
+  constructor(public src: string, public file: File) { }
+}
 @Component({
   selector: 'employee2',
   templateUrl: './employee.component.html',
@@ -49,6 +53,7 @@ export class EmployeeComponent implements OnInit {
     var item = window.localStorage.getItem('deptId');
     var itemobj = JSON.parse(item);
     this.user = itemobj;
+
     //this.userId = JSON.parse(item).department_id;
     //this.userRole = JSON.parse(item).role;
     console.log(this.userId, this.userRole, item);
@@ -162,6 +167,7 @@ export class EmployeeComponent implements OnInit {
       this.employee.role = '';
       this.employee.gender = '';
       this.employee.department_id = '';
+      //this.employee.image = this.selectedFile;
       jQuery('#btn_title').html('insert');
     }
     jQuery("#employeeModal").modal("show");
@@ -191,6 +197,7 @@ export class EmployeeComponent implements OnInit {
       this.isFormSubmitted = true;
       if (this.employeeData.valid) {
         this.SpinnerService.show();
+        debugger;
         this.service.CreateEmployee({ 'employee': this.employee }).subscribe((posRes) => {
           if (posRes.insert === 'success') {
             this.GetAllEmployee(this.user.department_id);
@@ -242,7 +249,22 @@ export class EmployeeComponent implements OnInit {
     this.employee = new employee();
     this.isShowButton = true;
   };
+  public image;
   pageChanged(event) {
+    debugger
     this.config.currentPage = event;
   };
+
+  selectedFile: ImageSnippet;
+  processFile(imageInput: any) {
+    const file: File = imageInput.files[0];
+    const reader = new FileReader();
+       debugger
+    reader.addEventListener('load', (event: any) => {
+      this.selectedFile = new ImageSnippet(event.target.result, file);
+      this.employee.image = this.selectedFile.src;
+    });
+
+    reader.readAsDataURL(file);
+  }
 };

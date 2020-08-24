@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 declare var jQuery:any;
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,7 @@ public isShowLeave:boolean;
         this.isShowDept = false;
         this.isShowLeave = true;
       };
-   
+
    if(this.userRole == "TeamManager"){
      this.isShowLeaveManage = true;
    }else{
@@ -31,10 +32,17 @@ public isShowLeave:boolean;
   ngOnInit(): void {
   }
   logout(){
-   let ans= confirm('are you sure to logout')
-   if(ans){
+    Swal.fire({
+      title: 'Are you sure to LogOut?',
+      //text: 'You will not be able to recover this imaginary file!',
+      //icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, LogOut it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
     this.router.navigate(['']);
-   }
-  }
-
+      }
+   })
+ }
 };

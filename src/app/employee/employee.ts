@@ -1,5 +1,5 @@
 export class employee {
-     s_no:number;
+    s_no:number;
     id:number;
     name:string;
     gender:string;
@@ -14,6 +14,7 @@ export class employee {
     department_id:any;
     dateOfJoining:Date;
     role:string;
-  filter: any;
+    image:any;
+    filter: any;
 
 }

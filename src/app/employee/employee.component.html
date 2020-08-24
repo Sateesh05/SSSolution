@@ -1,55 +1,55 @@
 <div class="container">
   <div class="col-sm-12" style="padding: 0;">
     <span style="color:rgb(206, 170, 9);font-size:27px;" id=dept_title></span>
-    <button *ngIf='isShow' class="btn btn-success glyphicon glyphicon-plus glyph bt-sm float-right"
-      (click)="empOpenPopup(0)">
+    <button *ngIf='isShow' class="btn btn-success  glyph bt-sm float-right" (click)="empOpenPopup(0)">
       Add New Employee
     </button>
+    <br>
   </div>
   <div class="row" style="margin-top:10px;margin-bottom: 10px;">
   </div>
-  <div class="mat-elevation-z8">
-  <div class="table-responsive-md-2">
-    <table class="table table-bordered
+  <div class="">
+    <div class="table-responsive-md-2">
+      <table class="table table-bordered
                     table-hover
                     table-stripped
                     table-condensed">
-      <thead style="background-color: rgb(22, 155, 22);color: white;">
-        <tr>
-          <th style="font-weight: 400;">S.NO</th>
-          <th style="font-weight: 400;">EMPLOYEE NAME</th>
-          <th style="font-weight: 400;">MOBILE NO</th>
-          <th style="font-weight: 400;">EMAIL</th>
-          <th style="font-weight: 400;">Department</th>
-          <th style="font-weight: 400;">Role</th>
-          <th style="font-weight: 400;" *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Action(s)</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let x of employeeResult|paginate:config;">
-          <td>{{x.s_no}}</td>
-          <td>{{x.name}}</td>
-          <td>{{x.mobileNumber}}</td>
-          <td>{{x.email}}</td>
-          <td>{{x.department}}</td>
-          <td [ngClass]="{'text-primary':x.role==='TeamManager','text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
-          <td *ngIf='isShow'>
-            <button  style='outline: none;border: none;' class= 'mat-icon-button' (click)="viewProfilePopup(x)">
-              <mat-icon  color="primary" class="mat-18">remove_red_eye</mat-icon>
-            </button>
-            <button  style='outline: none;border: none;' class= 'mat-icon-button' (click)="empOpenPopup(x)">
-             <mat-icon  color="accent" class="mat-18">edit</mat-icon>
-            </button>
-            <button  (click)="Delete(x.id)" style='outline: none;border: none;' class= 'mat-icon-button'>
-              <mat-icon color="warn" class="mat-18">delete</mat-icon> </button>
+        <thead style="background-color: rgb(22, 155, 22);color: white;">
+          <tr>
+            <th style="font-weight: 400;">S.NO</th>
+            <th style="font-weight: 400;">EMPLOYEE NAME</th>
+            <th style="font-weight: 400;">MOBILE NO</th>
+            <th style="font-weight: 400;">EMAIL</th>
+            <th style="font-weight: 400;">Department</th>
+            <th style="font-weight: 400;">Role</th>
+            <th style="font-weight: 400;" *ngIf='isShow!' class='glyphicon glyphicon-pencil'>Action(s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let x of employeeResult|paginate:config;">
+            <td>{{x.s_no}}</td>
+            <td>{{x.name}}</td>
+            <td>{{x.mobileNumber}}</td>
+            <td>{{x.email}}</td>
+            <td>{{x.department}}</td>
+            <td [ngClass]="{'text-primary':x.role==='TeamManager','text-danger':x.role ==='TeamMember'}">{{x.role}}</td>
+            <td *ngIf='isShow'>
+              <button style='outline: none;border: none;' class='mat-icon-button' (click)="viewProfilePopup(x)">
+                <mat-icon color="primary" class="mat-18">remove_red_eye</mat-icon>
+              </button>
+              <button style='outline: none;border: none;' class='mat-icon-button' (click)="empOpenPopup(x)">
+                <mat-icon color="accent" class="mat-18">edit</mat-icon>
+              </button>
+              <button (click)="Delete(x.id)" style='outline: none;border: none;' class='mat-icon-button'>
+                <mat-icon color="warn" class="mat-18">delete</mat-icon>
+              </button>
             </td>
-        </tr>
-      </tbody>
-    </table>
-    <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+          </tr>
+        </tbody>
+      </table>
+      <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+    </div>
   </div>
-</div>
   <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
     <p style="color: white">Please Wait. </p>
   </ngx-spinner>
@@ -61,9 +61,10 @@
       <!-- Modal Header -->
       <div class="modal-header" style="background-color: forestgreen;
       padding: 6px;
-      margin-bottom: 8px;" >
+      margin-bottom: 8px;">
         <h2 id='m_title' class="modal-title"></h2>
-        <button (click)='close()' class="close"data-dismiss="modal" style = "color: white;outline: none;">&times;</button>
+        <button (click)='close()' class="close" data-dismiss="modal"
+          style="color: white;outline: none;">&times;</button>
       </div>
       <!-- Modal body -->
       <div class="modal-xl">
@@ -72,15 +73,17 @@
             <!--Employee name input box-->
             <div class="col-sm-4 form-group ">
               <label>Employee name</label>
-              <input [disabled]='' type="text" id="m_name" class="form-control" [(ngModel)]="employee.name" formControlName="name"
-                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('name').hasError('required')}" >
+              <input [disabled]='' type="text" id="m_name" class="form-control" [(ngModel)]="employee.name"
+                formControlName="name"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('name').hasError('required')}">
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('name').hasError('required')">
                 *Employee name is required.
               </div>
               <div style='color:red' *ngIf=" employeeData.controls['name'].hasError('pattern')">
                 *enter the valid name.
               </div>
-              <div style='color:red' *ngIf="employeeData.controls['name'].touched && employeeData.controls['name'].hasError('maxlength')">
+              <div style='color:red'
+                *ngIf="employeeData.controls['name'].touched && employeeData.controls['name'].hasError('maxlength')">
                 *name valid with in 20 charecters.
               </div>
             </div>
@@ -88,25 +91,27 @@
             <div class="col-sm-4 form-group ">
               <label>Employee Gender</label>
               <select [disabled]='' id="m_gender" formControlName="gender" class="form-control"
-                [(ngModel)]="employee.gender"[ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('gender').hasError('required')}" >
+                [(ngModel)]="employee.gender"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('gender').hasError('required')}">
                 <option value="" disabled>--Please choose employee gender--</option>
                 <option value="Male">Male</option>
                 <option value='Female'>Female</option>
                 <option value='Third Gender'>Third Gender</option>
               </select>
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('gender').hasError('required')" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('gender').hasError('required')">
                 *Employee name is required.
               </div>
             </div>
             <!--Employee age-->
             <div class="col-sm-4 form-group ">
               <label>Employee Age</label>
-              <input [disabled]='' type="text" id="m_age" class="form-control" [(ngModel)]="employee.age" formControlName="age"
-                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('age').hasError('required')}" >
-              <div style = 'color:red'*ngIf="isFormSubmitted && employeeData.get('age').hasError('required')" >
+              <input [disabled]='' type="text" id="m_age" class="form-control" [(ngModel)]="employee.age"
+                formControlName="age"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('age').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('age').hasError('required')">
                 Employee Age is required.
               </div>
-              <div style = 'color:red'*ngIf="isFormSubmitted && employeeData.get('age').hasError('pattern')" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('age').hasError('pattern')">
                 Employee Age is valid at 18-60.
               </div>
             </div>
@@ -116,32 +121,35 @@
             <div class="col-sm-4 form-group ">
               <label>Employee Experiance</label>
               <input [disabled]='' type="text" id="m_experiance" class="form-control" [(ngModel)]="employee.experiance"
-                formControlName="experiance" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('experiance').hasError('required')}" >
-              <div style= 'color:red'*ngIf="isFormSubmitted && employeeData.get('experiance').hasError('required')" >
+                formControlName="experiance"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('experiance').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('experiance').hasError('required')">
                 *Employee Experiance is required.
               </div>
             </div>
             <!--Employee mpbile no-->
             <div class="col-sm-4 form-group ">
               <label>Employee Mobile Number</label>
-              <input [disabled]='' type="number" id="m_mobileNumber" class="form-control" [(ngModel)]="employee.mobileNumber"
-                formControlName="mobileNumber" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('mobileNumber').hasError('required')}" >
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('required')" >
+              <input [disabled]='' type="number" id="m_mobileNumber" class="form-control"
+                [(ngModel)]="employee.mobileNumber" formControlName="mobileNumber"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('mobileNumber').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('required')">
                 *Employee Mobile Number is required.
               </div>
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('pattern')" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('pattern')">
                 *Enter the valid Mobile Number.
               </div>
             </div>
             <!--Employee email-->
             <div class="col-sm-4 form-group ">
               <label>Employee Email</label>
-              <input [disabled]='' type="text" id="m_email" class="form-control" [(ngModel)]="employee.email" formControlName="email"
-                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('email').hasError('required')}" >
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('email').hasError('required')" >
+              <input [disabled]='' type="text" id="m_email" class="form-control" [(ngModel)]="employee.email"
+                formControlName="email"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('email').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('email').hasError('required')">
                 *Employee Email is required.
               </div>
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('email').hasError('pattern')" >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('email').hasError('pattern')">
                 *Enter the valid Email.
               </div>
             </div>
@@ -150,20 +158,22 @@
           <div class="row col-sm-12">
             <div class="col-sm-4 form-group ">
               <label>Employee Password</label>
-              <input [disabled]='' type="text" id="m_password" class="form-control" [(ngModel)]="employee.password" formControlName="password"
-                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('password').hasError('required')}" >
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('password').hasError('required')">
+              <input [disabled]='' type="text" id="m_password" class="form-control" [(ngModel)]="employee.password"
+                formControlName="password"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('password').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('password').hasError('required')">
                 *Employee Password is required.
               </div>
-              <div style='color:red'*ngIf="employeeData.get('password').hasError('minlength')">
+              <div style='color:red' *ngIf="employeeData.get('password').hasError('minlength')">
                 *Employee Password minimumlength is 6 charectors.
               </div>
             </div>
             <!--Employee joiningdate-->
             <div class="col-sm-4 form-group ">
               <label>Employee Joining Date</label>
-              <input [disabled]='' type="date" id="m_JoiningDate" class="form-control" [(ngModel)]="employee.dateOfJoining"
-                formControlName="dateOfJoining" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('dateOfJoining').hasError('required')}" >
+              <input [disabled]='' type="date" id="m_JoiningDate" class="form-control"
+                [(ngModel)]="employee.dateOfJoining" formControlName="dateOfJoining"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('dateOfJoining').hasError('required')}">
               <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('dateOfJoining').hasError('required') ">
                 Employee dateOfJoining is required.
               </div>
@@ -172,7 +182,8 @@
             <div class="col-sm-4 form-group ">
               <label>Employee Department</label>
               <select [disabled]='' id="m_department" formControlName="department_id" class="form-control"
-                [(ngModel)]="employee.department_id" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('department_id').hasError('required')}" >
+                [(ngModel)]="employee.department_id"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('department_id').hasError('required')}">
                 <option value="" selected="selected" value>--Please choose employee department--</option>
                 <option *ngFor='let x of deportmentRecords' value={{x.id}}>{{x.name}}</option>
               </select>
@@ -182,9 +193,10 @@
             <!--Employee address-->
             <div class="col-sm-4 form-group ">
               <label>Employee Address</label>
-              <input [disabled]='' type="text" id="m_address" class="form-control" [(ngModel)]="employee.address" formControlName="address"
-                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('address').hasError('required')}" >
-              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('address').hasError('required')" >
+              <input [disabled]='' type="text" id="m_address" class="form-control" [(ngModel)]="employee.address"
+                formControlName="address"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('address').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('address').hasError('required')">
                 *Employee Address is required.
               </div>
             </div>
@@ -192,28 +204,36 @@
             <div class="col-sm-4 form-group">
               <label>Employee Role</label>
               <select [disabled]='' id="m_role" formControlName="role" class="form-control" [(ngModel)]="employee.role"
-              [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('role').hasError('required')}">
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('role').hasError('required')}">
                 <option value="" disabled>--Please choose Employee Role--</option>
                 <option value="TeamManager">Team Manager</option>
                 <option value="TeamMember">Team Member</option>
               </select>
-              <div style='color:red'*ngIf="isFormSubmitted && employeeData.get('role').hasError('required') " >
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('role').hasError('required') ">
                 *Employee Role is required.
               </div>
             </div>
             <!--Employee Designation input box-->
             <div class="col-sm-4 form-group">
               <label>Employee Designation</label>
-              <input [disabled]='' type="text" id="m_designation" class="form-control" [(ngModel)]="employee.designation"
-                formControlName="designation" [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('designation').hasError('required')}" >
-              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('designation').hasError('required')" >
+              <input [disabled]='' type="text" id="m_designation" class="form-control"
+                [(ngModel)]="employee.designation" formControlName="designation"
+                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('designation').hasError('required')}">
+              <div style='color:red' *ngIf="isFormSubmitted && employeeData.get('designation').hasError('required')">
                 *designation is required.
               </div>
             </div>
           </div>
+
+      <label class="image-upload-container btn btn-bwm">
+        <span>Select Image</span>
+        <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)">
+      </label>
+
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button *ngIf='isShowButton' type="submit" id='btn_title' class="btn btn-success" (click)='empInsertUpdate()'></button>
+            <button *ngIf='isShowButton' type="submit" id='btn_title' class="btn btn-success"
+              (click)='empInsertUpdate()'></button>
             <button type="button" id='btn_close_title' (click)='close()' class="btn btn-danger"
               data-dismiss="modal">Close</button>
           </div>

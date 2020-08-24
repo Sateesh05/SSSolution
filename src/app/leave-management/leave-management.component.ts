@@ -24,8 +24,9 @@ export class LeaveManagementComponent implements OnInit {
   public user = new Leave();
   config: any;
   public isFormSubmitted: boolean;
-  public isUpdtColumnShow: boolean = null;
-  public isDisableProfilView:boolean;
+  //public isUpdtColumnShow: boolean = null;
+  public isDisableProfilView:boolean = true;
+  //public isButtonshow:boolean = false;
   public formData: FormGroup = new FormGroup({
     subject: new FormControl(null, [Validators.required]),
     reason: new FormControl(null, [Validators.required]),
@@ -49,7 +50,7 @@ export class LeaveManagementComponent implements OnInit {
     }
   };
   ngOnInit(): void {
-    this.isUpdtColumnShow = false;
+    //this.isUpdtColumnShow = false;
     this.GetEmployeeByRole(this.role);
     jQuery('#btn_title').html('Apply Leave');
     this.GetAllLeaveRecords(this.user);
@@ -77,7 +78,15 @@ export class LeaveManagementComponent implements OnInit {
     //this.SpinnerService.show();
     this.service.GetLeaveRecords(user).subscribe((posRes) => {
       if (posRes) {
+        debugger
         this.leaveResult = posRes;
+        // this.leaveResult.forEach(element => {
+        //   if(element.action =='Pending'){
+        //    this.isButtonshow = true;
+        //   }else{
+        //     this.isButtonshow = false;
+        //   }
+        // })
         console.log(this.leaveResult);
         this.service.GetLeaveRecords(user).subscribe((posRes) => {
           if (posRes) {
@@ -135,16 +144,14 @@ export class LeaveManagementComponent implements OnInit {
         });
       };
     }, this.ErrorCallBack);
-
   };
   pipe = new DatePipe('en-US');
   actionItem_array: string[] = [];
   public filterData;
-
   viewProfilePopup(item){
     debugger;
     this.isDisableProfilView = true;
-    this.isUpdtColumnShow = true;
+    //this.isUpdtColumnShow = true;
     if (item) {
       //debugger;
       var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
@@ -153,85 +160,36 @@ export class LeaveManagementComponent implements OnInit {
       //this.isFormSubmitted = true;
       jQuery('#m_title').html('Update Record');
       jQuery('#btn_addrecord_title').html('Update');
-      jQuery('#action').prop('disabled', false);
+      //jQuery('#action').prop('disabled', true);
+      jQuery('input,select,textarea').prop('disabled', true);
       jQuery('#leaveMangementModel').modal('show');
-    } 
-
-  }
-  OpenPopup(item) {
-    if (item) {
-      this.isUpdtColumnShow = false;
-      debugger;
-      var date = this.pipe.transform(new Date(item.dateOfleave), 'yyyy-MM-dd');
-      item.dateOfleave = date;
-      this.leave = item;
-      //this.isFormSubmitted = true;
-      jQuery('#m_title').html('Update Record');
-      jQuery('#btn_addrecord_title').html('Update');
-      jQuery('#action').prop('disabled', false);
-      jQuery('#leaveMangementModel').modal('show');
-    } else {
-      this.service.GetLeaveRecordByUserId(this.user.id).subscribe((posRes) => {
-        //console.log(posRes)
-        this.filterData = posRes.filter(
-          function isBigEnough(element, index, array) {
-            return (element.action == 'Pending' || element.action == 'Approved');
-          }
-        );
-        //console.log(this.filterData.length);
-        if (this.filterData.length < 5) {
-          jQuery('#action').prop('disabled', false);
-          this.leave.name = this.user.name;
-          this.leave.userid = this.user.userid;
-          this.leave.action = 'Pending'
-          jQuery('#action').prop('disabled', true);
-          jQuery('#m_title').html('Leave Request');
-          jQuery('#btn_addrecord_title').html('Apply');
-          jQuery('#leaveMangementModel').modal('show');
-        } else {
-          alert('you have exceeds yours  5 lives limit ')
-        };
-      }, this.ErrorCallBack);
     }
-  };
-  InsertUpdate() {
-    debugger;
-    if (this.leave.id > 0) {
-      const id = this.leave.id;
+  }
+  //Update Leave Status
+  LeaveStatus(x,item){
+    debugger
+    if(item == '1'){
+      this.leave.id = x;
+      this.leave.action='Approved';
       const data = { 'leave': this.leave };
-    
-        this.isFormSubmitted = true;
-        this.SpinnerService.show();
-        this.service.UpdateLeaveRecord(id, data).subscribe((poRes) => {
-          if (poRes.update === 'success') {
-            this.GetAllLeaveRecords(this.user);
-            this.isFormSubmitted = null;
-            this.leave = new Leave();
-            jQuery('#leaveMangementModel').modal('hide');
-            this.SpinnerService.hide();
-          };
-        }, this.ErrorCallBack)
-      
-    } else {
-      this.leave.userid = this.user.id
+      this.service.LeaveStatusUpdateById(data).subscribe((poRes) => {
+        if (poRes.update === 'success') {
+          this.GetAllLeaveRecords(this.user);
+          this.leave = new Leave();
+        };
+      }, this.ErrorCallBack)
+    }else{
+      this.leave.id = x;
+      this.leave.action = 'Rejected';
       const data = { 'leave': this.leave };
-      if (this.formData.valid) {
-        this.isFormSubmitted = true;
-        this.SpinnerService.show();
-        this.service.CreateLeaveRecord(data).subscribe((posRes) => {
-          if (posRes.insert === 'success') {
-            this.GetAllLeaveRecords(this.user);
-            this.isFormSubmitted = null;
-            this.leave = new Leave();
-            jQuery('#leaveMangementModel').modal('hide');
-            this.SpinnerService.hide();
-          };
-        }, this.ErrorCallBack)
-      } else {
-        alert('alert')
-      }
-    };
-  };
+      this.service.LeaveStatusUpdateById(data).subscribe((poRes) => {
+        if (poRes.update === 'success') {
+          this.GetAllLeaveRecords(this.user);
+          this.leave = new Leave();
+        };
+      }, this.ErrorCallBack)
+    }
+  }
   //delete Method
   delete(id) {
     Swal.fire({

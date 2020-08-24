@@ -41,8 +41,22 @@
   </td>
   <td width="20%">
     <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-     <a class="nav-link " style='text-align:right;color:white;cursor: pointer;overflow:hidden;margin:0px 0px 0px 180px'
-      (click)='logout()'>LogOut</a>
+
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+
+      <li class="nav-item avatar dropdown" dropdown>
+        <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+          <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" alt=""
+            class="img-fluid rounded-circle z-depth-0"></a>
+        <div *dropdownMenu class="dropdown-menu dropdown-menu-right dropdown dropdown-primary" role="menu">
+         
+          <a class="dropdown-item waves-light" mdbWavesEffect href="#">Log out</a>
+        </div>
+      </li>
+    </ul>
+
+     <!-- <a class="nav-link " style='text-align:right;cursor: pointer;overflow:hidden;margin:0px 0px 0px 180px'
+      (click)='logout()'></a> -->
     </nav>
   </td>
 </table>

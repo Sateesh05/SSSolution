@@ -8,7 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { departmentService } from '../department/department.service';
 @NgModule({
     declarations: [LoginComponent],
-    imports: [CommonModule, HttpClientModule, FormsModule, RouterModule.forChild([
+  imports: [CommonModule, HttpClientModule, FormsModule, RouterModule.forChild([
         { path: '', component: LoginComponent }
 
     ])],

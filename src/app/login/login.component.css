@@ -24,5 +24,11 @@ body {
   };
 .errorTxtBorder {
   border: 1px solid #ff6358 !important;
+};
+.text-info {
+    color: #1406ef!important;
 }
+
+
+
 

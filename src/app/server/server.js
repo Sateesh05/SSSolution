@@ -12,14 +12,14 @@ let connection = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: 'root123',
+    password: 'Hyderabad8',
     database: 'ssdb',
     port: 3306
   }
 );
 // get Records Of Department Table
 app.get('/department', (req, res) => {
-  connection.query(`select * from department`, (err, records, fields) => {
+  connection.query(`select * from department  order by id desc`, (err, records, fields) => {
     if (err) throw err;
     else {
       res.send(records);
@@ -40,7 +40,7 @@ const { count } = require('console');
 //get All Records of employee Table where department_id
 app.get('/allemployees', (req, res) => {
   //console.log(req.query)
-  let query = req.query.dept == 0 ? `select * from employee` : `select * from employee where department_id = ${req.query.dept}`;
+  let query = req.query.dept == 0 ? `select * from employee  order by id desc` : `select * from employee where department_id = ${req.query.dept} order by id desc`;
   connection.query(query, (err, records, fields) => {
     if (err) throw err;
     else {
@@ -82,7 +82,7 @@ app.get('/employee/dptd/:id', (req, res) => {
 //login authentication and get role,department_id
 app.post('/login', (req, res) => {
 
-  let query = `select department_id,role,id,name from employee where email = '${req.body.email}'and password = '${req.body.password}'`;
+  let query = `select department_id,role,id,name,image from employee where email = '${req.body.email}'and password = '${req.body.password}'`;
 
   //console.log(query);
   connection.query(query, (err, record, fields) => {
@@ -98,7 +98,7 @@ app.post('/login', (req, res) => {
 
 //get recods of leaveRequest Table acorrding to user login
 app.get('/leaveRequest', (req, res) => {
-  let query = (req.query.departmentName == "Hr Department" && req.query.role == "TeamManager") ? `select * from leave_table` : `select * from leave_table where userid= ${req.query.userid} or reportingPerson_id= ${req.query.reportingPerson_id}`;
+  let query = (req.query.departmentName == "Hr Department" && req.query.role == "TeamManager") ? `select * from leave_table  order by id desc` : `select * from leave_table where userid= ${req.query.userid} or reportingPerson_id= ${req.query.reportingPerson_id}`;
   connection.query(query, (err, records, fields) => {
     //console.log(query)
     if (err) throw err;
@@ -131,13 +131,13 @@ app.post('/department', (req, res) => {
 //insert employee method
 app.post('/employee', (req, res) => {
   let query = `insert into employee(name,gender,age,experiance,mobileNumber,email,password
-   ,address,dateOfJoining,designation,department_id,role)
+   ,address,dateOfJoining,designation,department_id,role,image)
   values('${req.body.employee.name}','${req.body.employee.gender}','${req.body.employee.age}',
   '${req.body.employee.experiance}',${req.body.employee.mobileNumber},'${req.body.employee.email}',
   '${req.body.employee.password}','${req.body.employee.address}',
   '${req.body.employee.dateOfJoining}','${req.body.employee.designation}',
   ${+req.body.employee.department_id},
-  '${req.body.employee.role}')`;
+  '${req.body.employee.role}','${req.body.employee.image}')`;
   //console.log(query);
   connection.query(query, (err, result) => {
     if (err) throw err;
@@ -221,6 +221,17 @@ app.put('/leaveRequest/:id', (req, res) => {
   dateOfleave = '${req.body.leave.dateOfleave}',
   action = '${req.body.leave.action}' where
   id = ${req.params.id}`, (err, result) => {
+    if (err) throw err;
+    else {
+      res.send({ update: 'success' });
+    };
+  });
+});
+//leave Status Update by id
+app.put('/leaveStatusUpdate/:id', (req, res) => {
+  connection.query(`update leave_table set
+
+  action = '${req.body.leave.action}' where id = ${req.params.id}`, (err, result) => {
     if (err) throw err;
     else {
       res.send({ update: 'success' });

@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { User } from './user';
 import { departmentService } from '../department/department.service';
 import { ElementSchemaRegistry } from '@angular/compiler';
-
+declare var jQuery:any;
 @Component({
   selector: 'login',
   templateUrl: './login.component.html',
@@ -39,6 +39,7 @@ export class LoginComponent {
       } else {
         this.service.LoginData(userData).subscribe((posRes) => {
           if (posRes) {
+            debugger
             this.user = posRes[0];
             this.department.getByIdDepartmentRecord(this.user.department_id).subscribe((posRe) => {
               this.user.department = posRe[0].name;
@@ -61,7 +62,7 @@ export class LoginComponent {
     //debugger;
     if (event.target.name == 'email' && event.target.value != null && event.target.value != undefined && event.target.value != '') {
       this.isEmailValid = true;
-
+      jQuery('#username').css({ "border": "1px solid green"});
     } else {
       this.isEmailValid = false;
       //this.isPasswordValid = true;
@@ -71,7 +72,7 @@ export class LoginComponent {
     //debugger;
     if (event.target.name == 'password' && event.target.value != null && event.target.value != undefined && event.target.value != '') {
       this.isPasswordValid = true;
-
+      jQuery('#password').css('border-color', 'green');
     } else {
       //this.isEmailValid = false;
       this.isPasswordValid = false;

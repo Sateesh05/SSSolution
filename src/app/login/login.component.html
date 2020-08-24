@@ -5,7 +5,7 @@
       <div id="login-column" class="col-md-6">
         <div id="login-box" class="col-md-12">
           <form #user='ngForm' (ngSubmit)="Register(user)" id="login-form" class="form">
-            <h3 class="text-center text-info">Login</h3>
+            <h3 style='font-size:26px;'class="text-center text-info">Login</h3>
             <div class="form-group">
               <label for="email" class="text-info">Username:</label><br>
               <input (keyup)="onKeyUp1($event)" [style.border]="isEmailValid ? '': '1px solid #ff6358'" type="text"

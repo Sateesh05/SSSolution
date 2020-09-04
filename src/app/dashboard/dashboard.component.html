@@ -1,17 +1,21 @@
 <!--Header Design-->
 
-  <div class="jumbotron text-center">
-    <table width='100%;'vertical-align='-webkit-baseline-middle;'>
-      <td style ='text-align:right;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="rounded-circle" id="logo" alt="sslogo" width="35px" height="35px"></td>
-      <td width='240px'><h1>SS Solutions</h1></td>
-      <td  style ='text-align:left;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="" alt="admin" width="35px" height="35px"></td>
+<div class="jumbotron text-center">
+  <table width='100%;' vertical-align='-webkit-baseline-middle;'>
+    <td style='text-align:right;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="rounded-circle"
+        id="logo" alt="sslogo" width="35px" height="35px"></td>
+    <td width='240px'>
+      <h1>SS Solutions</h1>
+    </td>
+    <td style='text-align:left;vertical-align: middle;'><img src="assets\image\ssimage.gif" class="" alt="admin"
+        width="35px" height="35px"></td>
     <span class=admin_title></span>
-    </table>
-  </div>
+  </table>
+</div>
 
-<div style= 'width:100%'>
-<table width="100%" class='bg-primary'>
-  <td width="80%">
+<div style='width:100%'>
+  <table width="100%" class='bg-primary'>
+    <td width="80%">
       <!--Navbar-->
       <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
         <ul class="navbar-nav">
@@ -34,34 +38,43 @@
             <a class="nav-link " *ngIf='isShowLeave' [routerLink]="['leave']">leaves</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " [routerLink]="['profile']">Profile</a>
+            <a class="nav-link " *ngIf="isShowMyprofile" [routerLink]="['profile']">Myprofile</a>
           </li>
         </ul>
       </nav>
-  </td>
-  <td width="20%">
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    </td>
+    <td width="20%">
+      <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
 
-    <ul class="navbar-nav ml-auto nav-flex-icons">
+        <ul class="navbar-nav ml-auto nav-flex-icons">
 
-      <li class="nav-item avatar dropdown" dropdown>
-        <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-          <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" alt=""
-            class="img-fluid rounded-circle z-depth-0"></a>
-        <div *dropdownMenu class="dropdown-menu dropdown-menu-right dropdown dropdown-primary" role="menu">
-         
-          <a class="dropdown-item waves-light" mdbWavesEffect href="#">Log out</a>
-        </div>
-      </li>
-    </ul>
+          <li class="dropdown">
+            <a type="button" data-toggle="dropdown" class="nav-link dropdown-toggle"
+              style='padding:2px;margin-right: 4px;'>
+              <ng-container *ngIf="isImageSaved; else elseTemplate">
+                <img [src]="cardImageBase64" alt="" style='width:40px' class="img-fluid rounded-circle z-depth-0" />
+              </ng-container>
+              <ng-template #elseTemplate>
+                <img src="assets/image/profileavatar.jpg" alt="" style='width:35px'
+                  class="img-fluid rounded-circle z-depth-0">
+              </ng-template>
+            </a>
+            <div class="dropdown-menu" role="menu">
+              <a style='cursor: pointer;' class="dropdown-item " (click)='logout()'>Log out</a>
+            </div>
+          </li>
+        </ul>
 
-     <!-- <a class="nav-link " style='text-align:right;cursor: pointer;overflow:hidden;margin:0px 0px 0px 180px'
+        <!-- <a class="nav-link " style='text-align:right;cursor: pointer;overflow:hidden;margin:0px 0px 0px 180px'
       (click)='logout()'></a> -->
-    </nav>
-  </td>
-</table>
+      </nav>
+    </td>
+  </table>
 </div>
 <div>
+
   <br>
-  <router-outlet></router-outlet>
+  <router-outlet>
+
+  </router-outlet>
 </div>

@@ -96,6 +96,9 @@ export class EmployeeComponent implements OnInit {
   };
   showWarningMessage() {
     this.notifyService.showWarning('fill the popup fields', 'Warning')
+  };
+  showDuplicateWarningMessage() {
+    this.notifyService.showWarning('Duplicate Email entry is not allowed', 'Warning')
   }
   //Get All EmployeeRecords
   GetAllEmployee(userId) {
@@ -168,20 +171,20 @@ export class EmployeeComponent implements OnInit {
       this.employee.gender = '';
       this.employee.department_id = '';
       //this.employee.image = this.selectedFile;
-      jQuery('#btn_title').html('insert');
+      jQuery('#btn_title').html('save');
     }
     jQuery("#employeeModal").modal("show");
     //this.isShowButton = false;
   };
   //Insert and Update Method
   empInsertUpdate() {
-   //debugger;
+   debugger;
     if (this.employee.id > 0) {
       const id = this.employee.id;
       const data = { 'employee': this.employee }
       this.isFormSubmitted = true;
       if (this.employeeData.valid) {
-        this.SpinnerService.show();
+        //this.SpinnerService.show();
         this.service.UpdateEmployeeRecord(id, data).subscribe((posRes) => {
           if (posRes.update === 'success') {
             this.GetAllEmployee(this.user.department_id);
@@ -190,14 +193,15 @@ export class EmployeeComponent implements OnInit {
             this.SpinnerService.hide();
             this.showUpdateToaster()
             jQuery("#employeeModal").modal("hide");
-          };
+          }else if(posRes.errno == 1582){
+            this.showDuplicateWarningMessage();
+          }
         }, this.ErrorCallBack)
       } ;
     } else {
       this.isFormSubmitted = true;
       if (this.employeeData.valid) {
-        this.SpinnerService.show();
-        debugger;
+        //this.SpinnerService.show();
         this.service.CreateEmployee({ 'employee': this.employee }).subscribe((posRes) => {
           if (posRes.insert === 'success') {
             this.GetAllEmployee(this.user.department_id);
@@ -206,7 +210,9 @@ export class EmployeeComponent implements OnInit {
             this.SpinnerService.hide();
             this.showCreateToaster();
             jQuery("#employeeModal").modal("hide");
-          };
+          }else if(posRes.errno == 1582){
+            this.showDuplicateWarningMessage();
+          }
         }, this.ErrorCallBack);
      }
     };
@@ -254,17 +260,22 @@ export class EmployeeComponent implements OnInit {
     debugger
     this.config.currentPage = event;
   };
-
+public fileLength:string;
   selectedFile: ImageSnippet;
   processFile(imageInput: any) {
     const file: File = imageInput.files[0];
     const reader = new FileReader();
-       debugger
     reader.addEventListener('load', (event: any) => {
+      debugger
       this.selectedFile = new ImageSnippet(event.target.result, file);
-      this.employee.image = this.selectedFile.src;
+      const str = this.selectedFile.src;
+      const fruits = str.split('');
+      if (fruits.length * 2  < 2**16) {
+        this.employee.image = this.selectedFile.src;
+      }else{
+        this.fileLength = 'File exceeds the maximum size';
+      }
     });
-
     reader.readAsDataURL(file);
   }
 };

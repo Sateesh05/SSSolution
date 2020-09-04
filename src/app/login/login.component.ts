@@ -4,7 +4,7 @@ import { LoginService } from './login.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { User } from './user';
 import { departmentService } from '../department/department.service';
-import { ElementSchemaRegistry } from '@angular/compiler';
+import { NotificationService } from '../toastr/toastr.service';
 declare var jQuery:any;
 @Component({
   selector: 'login',
@@ -18,7 +18,18 @@ export class LoginComponent {
   public result: any;
   constructor(public router: Router,
     private service: LoginService,
-    private department: departmentService) { }
+    private department: departmentService,
+    private notifyService:NotificationService ) { }
+
+    EmailInvalidshowWarningMessage() {
+      this.notifyService.showWarning('Invalid Email', 'Warning')
+    };
+    PasswordInvalidshowWarningMessage() {
+      this.notifyService.showWarning('Password is MissMatch', 'Warning')
+    };
+    LoginSuccess() {
+      this.notifyService.showSuccess("Login Success", "Confermation")
+    };
   Register(data) {
 
     const userData = data.value;
@@ -38,16 +49,24 @@ export class LoginComponent {
         console.log(this.user);
       } else {
         this.service.LoginData(userData).subscribe((posRes) => {
-          if (posRes) {
+          console.log(posRes)
+          if (posRes.message == '0email') {
             debugger
+            //alert('invalid email')
+            this.EmailInvalidshowWarningMessage();
+          }else if(posRes.message == '0pswd'){
+            //alert('password miss match')
+            this.PasswordInvalidshowWarningMessage()
+          }else if( posRes.length > 0 ){
             this.user = posRes[0];
             this.department.getByIdDepartmentRecord(this.user.department_id).subscribe((posRe) => {
               this.user.department = posRe[0].name;
+              this.LoginSuccess();
               //console.log(this.user)
               localStorage.setItem('deptId', JSON.stringify(this.user));
               this.router.navigate(['/dashbord']);
             })
-          };
+          }else{this.PasswordInvalidshowWarningMessage()};
         }, (err: HttpErrorResponse) => {
           if (err.error instanceof Error) {
             console.log('client side error')

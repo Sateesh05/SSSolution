@@ -14,5 +14,6 @@ export class User {
     dateOfJoining:Date;
     role:string;
     filter: any;
+    image:string;
    
 }

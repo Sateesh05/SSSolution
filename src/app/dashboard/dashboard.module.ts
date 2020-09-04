@@ -4,11 +4,13 @@ import { DashboardComponent } from './dashboard.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { profileModule } from '../profile/profile/profile.module';
+import { ProfileComponent } from '../profile/profile/profile.component';
 //import { BrowserModule } from '@angular/platform-browser'
 
 @NgModule({
   declarations: [DashboardComponent],
-  imports: [CommonModule, HttpClientModule, RouterModule.forChild([
+  imports: [CommonModule, HttpClientModule,RouterModule.forChild([
     {
       path: '', component: DashboardComponent, children: [
         {

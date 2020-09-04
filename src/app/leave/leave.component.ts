@@ -27,6 +27,7 @@ export class LeaveComponent implements OnInit {
   public config: any;
   pipe = new DatePipe('en-US');
   public isFormSubmitted: boolean = null;
+  public isShowReportingPeson:boolean = null;
 
   constructor(public service: LeaveService,
     private empService: employeeService,
@@ -39,10 +40,16 @@ export class LeaveComponent implements OnInit {
     var itemobj = JSON.parse(item);
     this.user = itemobj;
     this.user.reportingPerson_id = this.user.id;
+    debugger
     if (this.user.role == "TeamManager" || this.user.role == "admin") {
       this.isShowLeave = true;
+      this.isShowReportingPeson = false;
+      this.formData.patchValue({
+        reportingPerson_id : 'null'
+      })
     } else {
       this.isShowLeave = false;
+      this.isShowReportingPeson = true;
     }
   };
 
@@ -51,7 +58,7 @@ export class LeaveComponent implements OnInit {
     subject: new FormControl(null, [Validators.required]),
     reason: new FormControl(null, [Validators.required]),
     dateOfleave: new FormControl(null, [Validators.required]),
-    reportingPerson_id: new FormControl(null, [Validators.required]),
+    reportingPerson_id: new FormControl(null, []),
     action: new FormControl(null, [Validators.required])
   });
   ngOnInit() {
@@ -217,6 +224,9 @@ export class LeaveComponent implements OnInit {
       }
     } else if (this.formData.valid) {
       this.leave.userid = this.user.id
+      if(this.leave.reportingPerson_id==''){
+        this.leave.reportingPerson_id = null;
+      }
       const data = { 'leave': this.leave }
       this.SpinnerService.show();
       this.service.CreateLeaveRecord(data).subscribe((posRes) => {
@@ -233,7 +243,9 @@ export class LeaveComponent implements OnInit {
       this.isFormSubmitted = null;
       this.leave = new Leave();
       jQuery('#leaveModal').modal('hide');
-    };
+    }else{
+     this.showLeavePopupWarning();
+    }
   };
   //delete Method
   delete(id) {

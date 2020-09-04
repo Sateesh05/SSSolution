@@ -7,12 +7,15 @@ import { LoginService } from './login/login.service';
 import { ToastrComponent } from './toastr/toastr.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+import { ProfileComponent } from './profile/profile/profile.component';
+import { profileModule } from './profile/profile/profile.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ToastrComponent
+    
   ],
   imports: [
     BrowserAnimationsModule,

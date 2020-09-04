@@ -21,7 +21,6 @@
             <th style="font-weight: 400;">REPORTING PERSON</th>
             <th style="font-weight: 400;">DATE OF LEAVE</th>
             <th style="font-weight: 400;">STATUS</th>
-            <th style="font-weight: 400;">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -33,14 +32,7 @@
             <td>{{x.reportingPersonName}}</td>
             <td>{{x.dateOfleave| date :'mediumDate'}}</td>
             <td>{{x.action}}</td>
-            <td>
-              <button *ngIf='false'  style='outline: none;border: none;' class= 'mat-icon-button' (click)="OpenPopup(x)">
-               <mat-icon  color="accent" class="mat-18">edit</mat-icon>
-             </button>
-             <button  (click)="delete(x.id)" style='outline: none;border: none;' class= 'mat-icon-button'>
-               <mat-icon color="warn" class="mat-18">delete</mat-icon> 
-              </button>
-            </td>
+            
           </tr>
         </tbody>
       </table>
@@ -98,10 +90,10 @@
             </div>
           </div>
           <!--Leave Reporting Person Input Box-->
-          <div class="form-group ">
+          <div class="form-group " *ngIf='isShowReportingPeson'>
             <label class="control-label col-sm-2">ReportingPerson:</label>
             <div class="col-sm-6">
-              <select id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control" [(ngModel)]="leave.reportingPerson_id"
+              <select *ngIf='isShowReportingPeson' id="m_ReportingPerson_id" formControlName="reportingPerson_id" class="form-control" [(ngModel)]="leave.reportingPerson_id"
               [ngClass]="{'txtBdrColor':isFormSubmitted && formData.controls['reportingPerson_id'].hasError('required')}">
               <option value='' disabled>choose ReportingPerson</option>  
               <option *ngFor="let item of employeeData" value="{{item.id}}">{{item.name}}</option>

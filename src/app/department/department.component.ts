@@ -75,18 +75,21 @@ export class DepartmentComponent implements OnInit {
   };
   showWarningMessage() {
     this.notifyService.showWarning('fill the popup fields', 'Warning')
+  };
+  showDuplicateWarningMessage() {
+    this.notifyService.showWarning('name duplicate is not allowed', 'Warning')
   }
 
   // Department Get Records
   getDepartmentRecords() {
-    //this.SpinnerService.show();
+    this.SpinnerService.show();
     this.service.getAllDepartmentRecords().subscribe((posRes) => {
       if (posRes) {
         this.deportmentRecords = posRes;
         this.dataSource.data = posRes as department[];
         this.deportmentRecords.map((element, index) => {
           element.s_no = index + 1;
-          //this.SpinnerService.hide();
+          this.SpinnerService.hide();
         });
         //console.log(this.deportmentRecords)
       };
@@ -97,7 +100,8 @@ export class DepartmentComponent implements OnInit {
   //Error Handling Method
   public errCallBack = (errRes: HttpErrorResponse) => {
     if (errRes.error instanceof Error) {
-      console.log('client side error');
+      debugger;
+      console.log('client side error',errRes);
       this.showErrormessage();
     } else {
       console.log('server side error');
@@ -111,12 +115,13 @@ export class DepartmentComponent implements OnInit {
       this.department = item;
     } else {
       jQuery("#m_title").html("Add New Record");
-      jQuery("#btn_title").html("Insert");
+      jQuery("#btn_title").html("save");
     }
     jQuery("#departmentModel").modal("show");
   };
   //Insert and Update method
   InsertUpdate() {
+    debugger
     if (this.department.id > 0) {
       const data = { 'department': this.department }
       const id = this.department.id;
@@ -132,7 +137,9 @@ export class DepartmentComponent implements OnInit {
             this.SpinnerService.hide();
             this.showUpdateToaster();
             jQuery("#departmentModel").modal("hide");
-          };
+          }else if(posRes.errno == 1582){
+            this.showDuplicateWarningMessage();
+          }
 
         }, this.errCallBack);
       } else {
@@ -151,6 +158,8 @@ export class DepartmentComponent implements OnInit {
             this.SpinnerService.hide();
             this.showCreateToaster();
             jQuery("#departmentModel").modal("hide");
+          }else if(posRes.errno == 1582){
+            this.showDuplicateWarningMessage();
           }
         }, this.errCallBack);
       } else {

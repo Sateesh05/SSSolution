@@ -27,13 +27,30 @@
                         </div>
                     </div>
                 </div>-->
-                <div class="row" style="margin-top:10px;margin-bottom: 10px;">
-                </div>
+
+            <div class="row" style="margin-top:10px;margin-bottom: 10px;">
+            </div>
 
             <div class="col-md-10 grid-margin stretch-card">
                 <div class="card" *ngFor="let user of employee">
                     <div class="card-body">
-                        <p class="card-title font-weight-bold" style="font-size:20px">Profile</p>
+                        <p class="card-title font-weight-bold" style="font-size:20px">Profile&nbsp; 
+                            <a type="button">
+                                <ng-container *ngIf="isImageSaved; else elseTemplate">
+                                    <img src='{{user.image}}' alt="" style='width:70px'
+                                        class="img-fluid rounded-circle z-depth-0" />
+                                </ng-container>
+                                <ng-template #elseTemplate>
+                                    <img src="assets/image/profileavatar.jpg" alt="" style='width:70px'
+                                        class="img-fluid rounded-circle z-depth-0">
+                                </ng-template>
+                            </a>
+                           
+                            <a style='margin-left:100px;font-size:18px;' (click)='profileUpdate()' type='button'
+                                class="">Edit profile<mat-icon  color="primary" class="mat-18">edit</mat-icon></a>
+                            <a style='margin-left:100px;font-size:13px;' (click)='UpdateProfile()' type='button'
+                                class="profile-info-list-item"><i class="mdi mdi-eye"></i>Update profile pic</a>
+                        </p>
                         <hr>
                         <p class="card-description">User Information</p>
                         <ul class="about">
@@ -46,6 +63,7 @@
                             <li class="about-items"><i class="mdi mdi-lock-outline icon-sm "></i>
                                 <span class="about-item-name">Password:</span><span class="about-item-detail"
                                     type='password'>{{user.password}}</span> </li>
+
                             <!--  <li class="about-items"><i class="mdi mdi-format-align-left icon-sm "></i>
                                 <span class="about-item-name">Bio:</span>
                                 <span class="about-item-detail">Lorem ipsum dolor
@@ -104,7 +122,7 @@
             </div>
         </div>
         <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
-          <p style="color: rgb(173, 89, 89)">Please Wait. </p>
+            <p style="color: rgb(173, 89, 89)">Please Wait. </p>
         </ngx-spinner>
     </div>
 
@@ -114,3 +132,168 @@
     <!-- partial -->
 </div>
 <!-- main-panel ends -->
+<div class="modal fade" id="profileModal">
+    <div class="modal-dialog  modal-dialog-centered modal-md" data-keyboard="false" data-backdrop="satic">
+        <div class="modal-content modal-md">
+            <!-- Modal Header -->
+            <div class="modal-header" style="background-color: forestgreen;color:white;padding: 6px;margin-bottom: 8px;">
+                <h2 style='margin:0px'id='m_title' class="modal-title"></h2>
+                <button (click)='close()' class="close" data-dismiss="modal"
+                    style="color: white;outline: none;">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-xl">
+                <form [formGroup]="employeeData" novalidate>
+                    <div class="row col-sm-12">
+                        <!--Employee name input box-->
+                        <div class="col-sm-6 form-group ">
+                            <label>Employee name</label>
+                            <input [disabled]='' type="text" id="m_name" class="form-control"
+                                [(ngModel)]="userprofile.name" formControlName="name"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('name').hasError('required')}">
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('name').hasError('required')">
+                                *Employee name is required.
+                            </div>
+                            <div style='color:red' *ngIf=" employeeData.controls['name'].hasError('pattern')">
+                                *enter the valid name.
+                            </div>
+                            <div style='color:red'
+                                *ngIf="employeeData.controls['name'].touched && employeeData.controls['name'].hasError('maxlength')">
+                                *name valid with in 20 charecters.
+                            </div>
+                        </div>
+                        <!--Employee gender-->
+                        <div class="col-sm-6 form-group ">
+                            <label>Employee Gender</label>
+                            <select [disabled]='' id="m_gender" formControlName="gender" class="form-control"
+                                [(ngModel)]="userprofile.gender"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('gender').hasError('required')}">
+                                <option value="" disabled>--Please choose employee gender--</option>
+                                <option value="Male">Male</option>
+                                <option value='Female'>Female</option>
+                                <option value='Third Gender'>Third Gender</option>
+                            </select>
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('gender').hasError('required')">
+                                *Employee name is required.
+                            </div>
+                        </div>
+                    </div>
+                    <!--Employee age-->
+                    <div class="row col-sm-12">
+                        <div class="col-sm-6 form-group ">
+                            <label>Employee Age</label>
+                            <input [disabled]='' type="text" id="m_age" class="form-control"
+                                [(ngModel)]="userprofile.age" formControlName="age"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('age').hasError('required')}">
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('age').hasError('required')">
+                                Employee Age is required.
+                            </div>
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('age').hasError('pattern')">
+                                Employee Age is valid at 18-60.
+                            </div>
+                        </div>
+
+                        <!--Employee mpbile no-->
+                        <div class="col-sm-6 form-group ">
+                            <label>Employee Mobile Number</label>
+                            <input [disabled]='' type="number" id="m_mobileNumber" class="form-control"
+                                [(ngModel)]="userprofile.mobileNumber" formControlName="mobileNumber"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('mobileNumber').hasError('required')}">
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('required')">
+                                *Employee Mobile Number is required.
+                            </div>
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('mobileNumber').hasError('pattern')">
+                                *Enter the valid Mobile Number.
+                            </div>
+                        </div>
+                    </div>
+                    <!--Employee address-->
+                    <div class="row col-sm-12">
+                        <div class="col-sm-6 form-group ">
+                            <label>Employee Address</label>
+                            <input [disabled]='' type="text" id="m_address" class="form-control"
+                                [(ngModel)]="userprofile.address" formControlName="address"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('address').hasError('required')}">
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('address').hasError('required')">
+                                *Employee Address is required.
+                            </div>
+                        </div>
+                        <!--Employee Designation input box-->
+                        <div class="col-sm-6 form-group">
+                            <label>Employee Designation</label>
+                            <input [disabled]='' type="text" id="m_designation" class="form-control"
+                                [(ngModel)]="userprofile.designation" formControlName="designation"
+                                [ngClass]="{'txtBdrColor':isFormSubmitted && employeeData.get('designation').hasError('required')}">
+                            <div style='color:red'
+                                *ngIf="isFormSubmitted && employeeData.get('designation').hasError('required')">
+                                *designation is required.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- image
+                    <label class="image-upload-container btn btn-bwm">
+                        <span>Select Image</span>
+                        <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)">
+                    </label>
+                    <div style='color:red' *ngIf="fileLength!=''&&fileLength!=null&&fileLength!=undefined">
+                        *File exceeds the maximum size.
+                    </div> -->
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" id='btn_title' class="btn btn-success"
+                            (click)='empInsertUpdate()'>update</button>
+                        <button type="button" id='btn_close_title' (click)='close()' class="btn btn-danger"
+                            data-dismiss="modal">Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--profile pic update-->
+<div class="modal fade" id="profilePicModal">
+    <div class="modal-dialog  modal-dialog-centered modal-md" data-keyboard="false" data-backdrop="satic">
+        <div class="modal-content modal-md">
+            <!-- Modal Header -->
+            <div class="modal-header" style="background-color: forestgreen;color:white;padding: 6px;margin-bottom: 8px;">
+                <h2 style='margin:0px' id='m_Imgtitle' class="modal-title"></h2>
+                <button (click)='close()' class="close" data-dismiss="modal"
+                    style="color: white;outline: none;">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-md">
+                <form [formGroup]="profiledata">
+
+                    <!--image-->
+                    <label class="image-upload-container btn btn-bwm">
+                        <span><b>Select Image:</b>&nbsp;</span>
+                        <input type="file" formControlName="file" accept="image/*"
+                            (change)="onSelectFile($event)">
+                    </label>
+                    <div style='color:red' *ngIf="fileLength">
+                        *File exceeds the maximum size.
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button [disabled]='fileLength' type="submit" id='btn_title' class="btn btn-success"
+                            (click)='UpodateProfilePic()'>update</button>
+                        <button type="submite" id='btn_close_title' (click)='close()' class="btn btn-danger"
+                            data-dismiss="modal">Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

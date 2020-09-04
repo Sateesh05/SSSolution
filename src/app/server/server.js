@@ -5,14 +5,14 @@ let bodyparser = require('body-parser');
 const { createConnection } = require('net');
 app = express();
 app.use(cors());
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json({ limit: "50mb" }));
+app.use(bodyparser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 
 let connection = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: 'Hyderabad8',
+    password: 'root123',
     database: 'ssdb',
     port: 3306
   }
@@ -81,24 +81,45 @@ app.get('/employee/dptd/:id', (req, res) => {
 });
 //login authentication and get role,department_id
 app.post('/login', (req, res) => {
-
-  let query = `select department_id,role,id,name,image from employee where email = '${req.body.email}'and password = '${req.body.password}'`;
-
-  //console.log(query);
-  connection.query(query, (err, record, fields) => {
+  let isEmailquery = `select id from employee where email='${req.body.email}'`;
+  connection.query(isEmailquery, (err, record, fields) => {
     if (err) throw err;
-    else {
-      if (record.length > 0) {
-        res.send(record)
-
-      };
-    };
-  })
+    else if (record == '') {
+      // console.log(record)
+      res.send({ message: '0email' })
+    } else {
+      // console.log(record[0].id)
+      let isPsswordquery = `select id from employee where password='${req.body.password}'`;
+      connection.query(isPsswordquery, (err, record, fields) => {
+        if (err) throw err;
+        else if (record == '') {
+          //console.log(record)
+          return res.send({ message: '0pswd' })
+        } else {
+          //res.send(record)
+          let query = `select department_id,role,id,name,image from employee where email = '${req.body.email}'and password = '${req.body.password}'`;
+          //console.log(query);
+          connection.query(query, (err, record, fields) => {
+            if (err) throw err;
+            else {
+              //console.log(record)
+              if (record.length > 0) {
+                res.send(record)
+              } else {
+                res.send(record)
+              };
+            };
+          })
+        }
+      })
+    }
+  });
 });
 
 //get recods of leaveRequest Table acorrding to user login
 app.get('/leaveRequest', (req, res) => {
-  let query = (req.query.departmentName == "Hr Department" && req.query.role == "TeamManager") ? `select * from leave_table  order by id desc` : `select * from leave_table where userid= ${req.query.userid} or reportingPerson_id= ${req.query.reportingPerson_id}`;
+  let query = (req.query.departmentName == "Hr department" && req.query.role == "TeamManager") ? `select * from leave_table  order by id desc` : `select * from leave_table  where reportingPerson_id= ${req.query.reportingPerson_id} order by id desc`;
+  //console.log(query);
   connection.query(query, (err, records, fields) => {
     //console.log(query)
     if (err) throw err;
@@ -109,7 +130,7 @@ app.get('/leaveRequest', (req, res) => {
 });
 //get leave record By userid
 app.get('/leaveRequest/userid/:userid', (req, res) => {
-  let query = `select * from leave_table where userid=${req.params.userid}`;
+  let query = `select * from leave_table where userid=${req.params.userid} order by id desc`;
   //console.log(query);
   connection.query(query, (err, records, fields) => {
     if (err) throw err;
@@ -122,7 +143,10 @@ app.get('/leaveRequest/userid/:userid', (req, res) => {
 app.post('/department', (req, res) => {
   connection.query(`insert into department(name,description)values('${req.body.department.name}',
     '${req.body.department.description}')`, (err, result) => {
-    if (err) throw err;
+    if (err) {
+      //console.log(err);
+      res.send(err);
+    }
     else {
       res.send({ insert: 'success' });
     }
@@ -140,8 +164,9 @@ app.post('/employee', (req, res) => {
   '${req.body.employee.role}','${req.body.employee.image}')`;
   //console.log(query);
   connection.query(query, (err, result) => {
-    if (err) throw err;
-    else {
+    if (err) {
+      res.send(err);
+    } else {
       res.send({ insert: 'success' });
     }
   })
@@ -155,7 +180,7 @@ app.post('/leaveRequest', (req, res) => {
   and userid=${req.body.leave.userid}`;
   //console.log(count_Query);
   let insert_Query = `insert into leave_table(userid,subject,reason,reportingPerson_id,dateOfleave,action )
-    values(${req.body.leave.userid},'${req.body.leave.subject}','${req.body.leave.reason}','${req.body.leave.reportingPerson_id}',
+    values(${req.body.leave.userid},'${req.body.leave.subject}','${req.body.leave.reason}',${req.body.leave.reportingPerson_id},
     '${req.body.leave.dateOfleave}','${req.body.leave.action}')`;
 
   connection.query(update_Query, (err, result) => {
@@ -192,6 +217,7 @@ app.put('/department/:id', (req, res) => {
 //employee update method
 
 app.put('/employee/:id', (req, res) => {
+  //console.log(req.body.employee.image);
   connection.query(`update employee set name= '${req.body.employee.name}',
     gender= '${req.body.employee.gender}',
     age= '${req.body.employee.age}',
@@ -203,7 +229,37 @@ app.put('/employee/:id', (req, res) => {
     dateOfJoining= '${req.body.employee.dateOfJoining}',
     designation= '${req.body.employee.designation}',
     department_id = ${req.body.employee.department_id},
-    role= '${req.body.employee.role}' where id= ${req.params.id}`, (err, result) => {
+    role= '${req.body.employee.role}',
+    image= '${req.body.employee.image}' where id= ${req.params.id}`, (err, result) => {
+    if (err) {
+      res.send(err)
+    } else {
+      res.send({ update: 'success' });
+    };
+  });
+});
+
+//profile Update
+app.put('/employee/profileUpdate/:id', (req, res) => {
+  //console.log(req.body.employee.image);
+  connection.query(`update employee set 
+    name= '${req.body.employee.name}',
+    gender= '${req.body.employee.gender}',
+    age= '${req.body.employee.age}',
+    mobileNumber= ${req.body.employee.mobileNumber},
+    address= '${req.body.employee.address}',
+    designation= '${req.body.employee.designation}' where id= ${req.params.id}`, (err, result) => {
+    if (err) throw err;
+    else {
+      res.send({ update: 'success' });
+    };
+  });
+});
+//Remove Profile Pic
+app.put('/employee/UpdateProfilePic/:id', (req, res) => {
+  //console.log(req.body.employee.image);
+  connection.query(`update employee set 
+    image= '${req.body.employee.image}' where id= ${req.params.id}`, (err, result) => {
     if (err) throw err;
     else {
       res.send({ update: 'success' });

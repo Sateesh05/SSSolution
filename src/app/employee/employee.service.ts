@@ -35,5 +35,12 @@ export class employeeService{
         public GetEmployeeByRole(role):Observable<any>{
             return this.http.get('http://127.0.0.1:8080/employee/'+role);
         };
+        public UpdateEmployeeProfile(id,data):Observable<any>{
+            return this.http.put('http://127.0.0.1:8080/employee/profileUpdate/'+id,data);
+        };
+        public UpdateProfilePic(id,data):Observable<any>{
+            debugger
+            return this.http.put('http://127.0.0.1:8080/employee/UpdateProfilePic/'+id,data);
+        };
 
 };
